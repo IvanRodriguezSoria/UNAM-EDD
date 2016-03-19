@@ -1,4 +1,4 @@
-#Proyecto 1
+Proyecto 1
 
 Deben implementar un ordenador lexicográfico que funcione con uno o más archivos 
 de texto o la entrada estándar, y que imprima su salida en la salida estándar.
