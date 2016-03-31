@@ -35,9 +35,8 @@ public class ArbolRojinegro<T extends Comparable<T>>
          * @param elemento el elemento del vértice.
          */
         public VerticeRojinegro(T elemento) {
-            // Aquí va su código.
             super(elemento);
-            color = Color.NINGUNO;
+            color = Color.ROJO;
         }
 
         /**
@@ -45,8 +44,15 @@ public class ArbolRojinegro<T extends Comparable<T>>
          * @return una representación en cadena del vértice rojinegro.
          */
         public String toString() {
-            // Aquí va su código.
-            return null;
+            // TODO 
+            // Si falla agrega() toString() pasa. Sospecho es culpa de los giros.
+            String s = "";
+            if (color == Color.NEGRO)
+                s = "N";
+            else
+                s = "R";
+                
+            return s + "{" + elemento.toString() + "}";
         }
 
         /**
@@ -60,8 +66,31 @@ public class ArbolRojinegro<T extends Comparable<T>>
          *         otro caso.
          */
         @Override public boolean equals(Object o) {
-            // Aquí va su código.
-            return false;
+            if (o == null)
+                return false;
+            if (getClass() != o.getClass())
+                return false;
+            @SuppressWarnings("unchecked") VerticeRojinegro vertice = (VerticeRojinegro)o;
+            return auxEquals(this, vertice);
+        }
+        
+        private boolean auxEquals(VerticeRojinegro v1, VerticeRojinegro v2) {
+            VerticeRojinegro v1Izq, v2Izq, v1Der, v2Der;
+            
+            if (v1 == null && v2 == null)
+                return true;
+
+            if ((v1 == null && v2 != null) || (v1 != null && v2 == null) || !v1.elemento.equals(v2.elemento) )
+                return false;
+                
+            if (v1.color != v2.color)
+                return false;
+
+            v1Izq = verticeRojinegro(v1.izquierdo);
+            v2Izq = verticeRojinegro(v2.izquierdo);
+            v1Der = verticeRojinegro(v1.derecho);
+            v2Der = verticeRojinegro(v2.derecho);
+            return auxEquals(v1Izq, v2Izq) && auxEquals(v1Der, v2Der);
         }
     }
 
@@ -73,7 +102,6 @@ public class ArbolRojinegro<T extends Comparable<T>>
      *         mismo.
      */
     @Override protected Vertice nuevoVertice(T elemento) {
-        // Aquí va su código.
         return new VerticeRojinegro(elemento);
     }
 
@@ -101,7 +129,9 @@ public class ArbolRojinegro<T extends Comparable<T>>
      *         VerticeRojinegro}.
      */
     public Color getColor(VerticeArbolBinario<T> vertice) {
-        // Aquí va su código.
+        if (!(vertice instanceof ArbolRojinegro.VerticeRojinegro) )
+            throw new ClassCastException();
+            
         VerticeRojinegro v = verticeRojinegro(vertice);
         return v.color;
     }
@@ -113,30 +143,85 @@ public class ArbolRojinegro<T extends Comparable<T>>
      * @param elemento el elemento a agregar.
      */
     @Override public void agrega(T elemento) {
-        // Aquí va su código.
         super.agrega(elemento);
+        VerticeRojinegro v = verticeRojinegro(ultimoAgregado);
+        balanceaAgrega(v);
     }
 
     private void balanceaAgrega(VerticeRojinegro v) {
-        // TODO
+        // TODO 
+        // Falla en algunas ocaciones. Sospecho que es por los giros.
+        VerticeRojinegro padre;
+        VerticeRojinegro abuelo;
+        VerticeRojinegro aux;
+        
         // Caso 1:
-        if (!v.hayPadre())
+        if (!v.hayPadre()) {
             v.color = Color.NEGRO;
-
-        // Caso 2:
-        if (getColor(v.padre) == Color.NEGRO)
             return;
-
-        // Caso 3:
-        if (esHijoIzquierdo(v)) {
-
-        } else {
-
         }
+        // Caso 2:
+        padre = verticeRojinegro(v.padre);
+        if (getColor(padre) == Color.NEGRO) {
+            return;
+        }
+        // Caso 3:
+        abuelo = verticeRojinegro(padre.padre);
+        if (existeTio(v) && getTio(v).color == Color.ROJO ) {
+            padre.color = Color.NEGRO;
+            getTio(v).color = Color.NEGRO;
+            abuelo.color = Color.ROJO;
+            balanceaAgrega(abuelo);
+            return;
+        }
+            
+        // Caso 4:
+        if (esVerticeCruzado(v) ) {
+            if (esHijoIzquierdo(padre) )
+                giraIzquierda(padre);
+            else 
+                giraDerecha(padre);
+            aux = padre;
+            padre = v;
+            v = aux;
+        }
+            
+        // Caso 5:
+        padre.color = Color.NEGRO;
+        abuelo.color = Color.ROJO;
+        if (esHijoIzquierdo(v) )
+            giraDerecha(abuelo);
+        else 
+            giraIzquierda(abuelo); 
     }
 
+    // Regresa true en caso de que el vertice sea hijo izquierdo y false en otro caso.
     private boolean esHijoIzquierdo(VerticeRojinegro vertice) {
         return verticeRojinegro(vertice.padre.izquierdo) == vertice;
+    }
+
+    // Regresa al tio del vertice. Se debe usar en conjunto con existeTio().
+    private VerticeRojinegro getTio(VerticeRojinegro v) {
+        VerticeRojinegro vp = verticeRojinegro(v.padre);
+        if (esHijoIzquierdo(vp) )
+            return verticeRojinegro(vp.padre.derecho);
+        else
+            return verticeRojinegro(vp.padre.izquierdo); 
+    }
+    
+    // Regresa true en caso de que exista un tio del vertice y false en otro caso.
+    private boolean existeTio(VerticeRojinegro vertice) {
+        VerticeRojinegro v = verticeRojinegro(vertice);
+        return v.padre.padre.derecho != null && v.padre.padre.izquierdo != null;
+    }
+
+    // Regresa true si el vertice es cruzado con su padre, es decir: 
+    // Si el padre es hijo derecho y el vertice es hijo izquierdo regresa true.
+    // Si el padre es hijo izquierdo y el vertice es hijo derecho regresa true.
+    // false en otro caso.
+    private boolean esVerticeCruzado(VerticeRojinegro v) {
+        VerticeRojinegro vp = verticeRojinegro(v.padre);
+        return esHijoIzquierdo(v) != esHijoIzquierdo(vp);
     }
 
     /**
