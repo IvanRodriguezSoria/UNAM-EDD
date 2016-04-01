@@ -276,10 +276,71 @@ public class ArbolRojinegro<T extends Comparable<T>>
     }
     
     // TODO 
-    private void balanceaElimina(ArbolBinario<T>.Vertice v) {
+    private void balanceaElimina(ArbolBinario<T>.Vertice vertice) {
         // TODO 
-        if (v.padre == null) {}
+        VerticeRojinegro hermano, padre, aux, v;
+        v = verticeRojinegro(vertice);
         
+        // Caso 1:
+        if (v.padre == null) {
+            raiz = v;
+            return;
+        }
+        
+        // Caso 2:
+        padre = verticeRojinegro(v.padre);
+        hermano = getHermano(v);
+        if (hermano != null && hermano.color == Color.ROJO) {
+            hermano.color = Color.NEGRO;
+            padre.color = Color.ROJO;
+            if (esHijoIzquierdo(v))
+                giraIzquierda(padre);
+            else 
+                giraDerecha(padre);
+            
+            aux = padre;
+            padre = v;
+            v = aux;
+        }
+        
+        // Caso 3:
+        if (padre.color == Color.NEGRO && hermano.color == Color.NEGRO && sonHijosNegros(hermano)) {
+            hermano.color = Color.ROJO;
+            balanceaElimina(padre);
+            return;
+        }
+        
+        // Caso 4:
+        if (padre.color == Color.ROJO && hermano.color == Color.NEGRO && sonHijosNegros(hermano)) {
+            padre.color = Color.NEGRO;
+            hermano.color = Color.ROJO;
+            return;
+        }
+    }
+    
+    // Regresa al hermano del vertice. Ya se debe saber si existe padre.
+    private VerticeRojinegro getHermano(ArbolBinario<T>.Vertice v) {
+        if (esHijoIzquierdo(v))
+            return verticeRojinegro(v.padre.derecho);
+        else 
+            return verticeRojinegro(v.padre.izquierdo);
+    }
+    
+    // Regresa true en caso de que los hijos sean negros, false de lo contrario.
+    private boolean sonHijosNegros(ArbolBinario<T>.Vertice v) {
+        if (!tieneHijos(v) )
+            return false;
+        
+        if (v.derecho != null && v.izquierdo != null)
+            return verticeRojinegro(v.derecho).color == Color.NEGRO && verticeRojinegro(v.izquierdo).color == Color.NEGRO;
+            
+        if (v.derecho == null && v.izquierdo != null)
+            return verticeRojinegro(v.izquierdo).color == Color.NEGRO;
+            
+        if (v.derecho != null && v.izquierdo == null)
+            return verticeRojinegro(v.derecho).color == Color.NEGRO;
+            
+        return false;
     }
     
     // Regresa true en caso de que el vertice tenga almenos un hijo, false en otro caso.
