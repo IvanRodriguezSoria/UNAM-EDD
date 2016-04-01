@@ -46,7 +46,7 @@ public abstract class ArbolBinario<T> implements Coleccion<T> {
          *         <tt>false</tt> en otro caso.
          */
         @Override public boolean hayPadre() {
-            return padre != null;
+            return this != raiz;
         }
 
         /**
@@ -157,7 +157,6 @@ public abstract class ArbolBinario<T> implements Coleccion<T> {
      *        binario.
      */
     public ArbolBinario(Coleccion<T> coleccion) {
-        // Aquí va su código.
         for (T e : coleccion)
             agrega(e);
     }
@@ -181,7 +180,6 @@ public abstract class ArbolBinario<T> implements Coleccion<T> {
      * @return la profundidad del árbol.
      */
     public int profundidad() {
-        // Aquí va su código.
         return auxProfundidad(raiz);
     }
 

@@ -45,7 +45,7 @@ public class ArbolRojinegro<T extends Comparable<T>>
          */
         public String toString() {
             // TODO 
-            // Si falla agrega() toString() pasa. Sospecho es culpa de los giros.
+            // Aveces falla sospecho es culpa de los giros.
             String s = "";
             if (color == Color.NEGRO)
                 s = "N";
@@ -196,22 +196,20 @@ public class ArbolRojinegro<T extends Comparable<T>>
     }
 
     // Regresa true en caso de que el vertice sea hijo izquierdo y false en otro caso.
-    private boolean esHijoIzquierdo(VerticeRojinegro vertice) {
-        return verticeRojinegro(vertice.padre.izquierdo) == vertice;
+    private boolean esHijoIzquierdo(ArbolBinario<T>.Vertice vertice) {
+        return vertice.padre.izquierdo == vertice;
     }
 
     // Regresa al tio del vertice. Se debe usar en conjunto con existeTio().
-    private VerticeRojinegro getTio(VerticeRojinegro v) {
-        VerticeRojinegro vp = verticeRojinegro(v.padre);
-        if (esHijoIzquierdo(vp) )
-            return verticeRojinegro(vp.padre.derecho);
+    private VerticeRojinegro getTio(ArbolBinario<T>.Vertice v) {
+        if (esHijoIzquierdo(v.padre) )
+            return verticeRojinegro(v.padre.padre.derecho);
         else
-            return verticeRojinegro(vp.padre.izquierdo); 
+            return verticeRojinegro(v.padre.padre.izquierdo); 
     }
     
     // Regresa true en caso de que exista un tio del vertice y false en otro caso.
-    private boolean existeTio(VerticeRojinegro vertice) {
-        VerticeRojinegro v = verticeRojinegro(vertice);
+    private boolean existeTio(ArbolBinario<T>.Vertice v) {
         return v.padre.padre.derecho != null && v.padre.padre.izquierdo != null;
     }
 
@@ -219,9 +217,8 @@ public class ArbolRojinegro<T extends Comparable<T>>
     // Si el padre es hijo derecho y el vertice es hijo izquierdo regresa true.
     // Si el padre es hijo izquierdo y el vertice es hijo derecho regresa true.
     // false en otro caso.
-    private boolean esVerticeCruzado(VerticeRojinegro v) {
-        VerticeRojinegro vp = verticeRojinegro(v.padre);
-        return esHijoIzquierdo(v) != esHijoIzquierdo(vp);
+    private boolean esVerticeCruzado(ArbolBinario<T>.Vertice v) {
+        return esHijoIzquierdo(v) != esHijoIzquierdo(v.padre);
     }
 
     /**
@@ -232,5 +229,107 @@ public class ArbolRojinegro<T extends Comparable<T>>
      */
     @Override public void elimina(T elemento) {
         // Aquí va su código.
+        VerticeRojinegro v = verticeRojinegro(busca(elemento) );
+        VerticeRojinegro eliminado;
+        boolean existeFantasma = false;
+        
+        if (v == null)
+            return;
+        
+        // Buscamos el maximo vertice del subarbol izquierdo.
+        // En caso de no existir eliminado es el mismo vertice.    
+        if (v.hayIzquierdo() )
+            eliminado = verticeRojinegro(maximoEnSubarbol(v.izquierdo) );
+        else 
+            eliminado = v;
+            
+        // Intercambia elemento con el vertice maximo del subarbol izquierdo.
+        // O con el mismo en caso de no haber subarbol izquierdo.
+        v.elemento = eliminado.elemento;
+        eliminado.elemento = elemento;
+        
+        // Si no tiene hijos creamos un vertice fantasma.
+        if (!tieneHijos(eliminado) ) {
+            eliminado.izquierdo = fantasma();
+            existeFantasma = true;
+        }
+        
+        // Subimos el hijo izquierdo o derecho.
+        if (eliminado.hayIzquierdo() )    
+            eliminado = subirHijoIzquierdo(eliminado);
+        else 
+            eliminado = subirHijoDerecho(eliminado);
+        
+        // Cambiamos el color del vertice si este es rojo.
+        if (eliminado.color == Color.ROJO)
+            eliminado.color = Color.NEGRO;
+            
+        // Entramos a los 6 casos de rebalanceo.
+        //balanceaElimina(); TODO 
+        
+        // Si existe un fantasma llamamos a los caza fantasmas para quitarlo.
+        if (existeFantasma)
+            ghostBusters(ultimoAgregado);
+            
+        // Restamos el numero de elementos.
+        --elementos;
     }
+    
+    // TODO 
+    private void balanceaElimina(ArbolBinario<T>.Vertice v) {
+        // TODO 
+        if (v.padre == null) {}
+        
+    }
+    
+    // Regresa true en caso de que el vertice tenga almenos un hijo, false en otro caso.
+    private boolean tieneHijos(ArbolBinario<T>.Vertice v) {
+        return v.izquierdo != null || v.derecho != null;
+    }
+    
+    // Crea un nuevo vertice con su elemento igual a null y color rojo.
+    // Actualiza ultimoAgregado para poder eliminarlo sin buscar en todo el arbol.
+    private VerticeRojinegro fantasma() {
+        VerticeRojinegro v = new VerticeRojinegro(null);
+        v.color = Color.NEGRO;
+        ultimoAgregado = v;
+        return v;
+    }
+    
+    // Intercambia un vertice por su hijo.
+    // Regresa el hijo que ocupo el lugar del vertice.
+    private VerticeRojinegro subirHijoIzquierdo(ArbolBinario<T>.Vertice v) {
+        v.izquierdo.padre = v.padre;
+        if (v.hayPadre())
+            if (esHijoIzquierdo(v) )
+                v.padre.izquierdo = v.izquierdo;
+            else
+                v.padre.derecho = v.izquierdo;
+        else 
+            raiz = v.izquierdo;
+        
+        return verticeRojinegro(v.izquierdo);
+    }
+    
+    // Intercambia un vertice por su hijo.
+    // Regresa el hijo que ocupo el lugar del vertice.
+    private VerticeRojinegro subirHijoDerecho(ArbolBinario<T>.Vertice v) {
+        v.derecho.padre = v.padre;
+        if (v.hayPadre())
+            if (esHijoIzquierdo(v) )
+                v.padre.izquierdo = v.derecho;
+            else 
+                v.padre.derecho = v.derecho;
+        else
+            raiz = v.derecho;
+        
+        return verticeRojinegro(v.derecho);
+    }
+    
+    // Caza fantasmas que destruyen al maldito.
+    private void ghostBusters(ArbolBinario<T>.Vertice fantasma) {
+        fantasma.padre.izquierdo = null;
+        fantasma.padre = null;
+    }
+    
 }

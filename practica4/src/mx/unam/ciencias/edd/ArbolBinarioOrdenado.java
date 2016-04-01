@@ -94,14 +94,13 @@ public class ArbolBinarioOrdenado<T extends Comparable<T>>
        if (elemento == null)
            throw new IllegalArgumentException();
 
-       Vertice auxVertice = nuevoVertice(elemento);
-       ultimoAgregado = auxVertice;
        ++elementos;
 
-        if (raiz == null)
-            raiz = auxVertice;
-        else
-            auxAgrega(raiz, elemento, auxVertice);
+        if (raiz == null) {
+            raiz = nuevoVertice(elemento);
+            ultimoAgregado = raiz;
+        } else
+            auxAgrega(raiz, elemento);
     }
 
     /**
@@ -110,36 +109,36 @@ public class ArbolBinarioOrdenado<T extends Comparable<T>>
      * elemento el elemento a agregar al arbol y auxVertice el vertice que
      * contiene al elemento a agregar al arbol.
      */
-    private void auxAgrega(Vertice v, T elemento, Vertice auxVertice) {
+    private void auxAgrega(Vertice v, T elemento) {
         // Caso 1: El vertice con el elemento a agregar es menor o igual al
         // vertice donde nos encontramos en la recursion.
-        if (elemento.compareTo(v.elemento) <= 0) {
+        if (elemento.compareTo(v.elemento) <= 0)
 
             // Si no hay izquierdo, se agrega a la izquierda del vertice actual.
             if (!v.hayIzquierdo()) {
-                v.izquierdo = auxVertice;
+                v.izquierdo = nuevoVertice(elemento);
                 v.izquierdo.padre = v;
+                ultimoAgregado = v.izquierdo;
             }
 
             // Si hay izquierdo hacemos recursion sobre el vertice izquierdo.
             else
-                auxAgrega(v.izquierdo, elemento, auxVertice);
-        }
+                auxAgrega(v.izquierdo, elemento);
 
         // Caso 2: El vertice con el elemento a agregar es mayor al vertice donde
         // nos encontramos en la recursion.
-        else {
+        else 
 
             //  Si no hay derecho se agrega ala derecha del vertice actual.
             if (!v.hayDerecho()) {
-                v.derecho = auxVertice;
+                v.derecho = nuevoVertice(elemento);
                 v.derecho.padre = v;
+                ultimoAgregado = v.derecho;
             }
 
             // Si hay derecho, hacemos recursion sobre el vertice derecho.
             else
-                auxAgrega(v.derecho, elemento, auxVertice);
-        }
+                auxAgrega(v.derecho, elemento);
     }
 
     /**
@@ -255,18 +254,17 @@ public class ArbolBinarioOrdenado<T extends Comparable<T>>
      * @param vertice el vértice sobre el que vamos a girar.
      */
     public void giraDerecha(VerticeArbolBinario<T> vertice) {
-        // TODO falla en muy raros casos.
         if (vertice == null || !vertice.hayIzquierdo())
             return;
 
         Vertice v = vertice(vertice);
         Vertice verticeIzquierdo = v.izquierdo;
         verticeIzquierdo.padre = v.padre;
-        if (v != raiz)
+        if (v.padre != null)
             if (esHijoIzquierdo(v))
-                verticeIzquierdo.padre.izquierdo = verticeIzquierdo;
+                v.padre.izquierdo = verticeIzquierdo;
             else
-                verticeIzquierdo.padre.derecho = verticeIzquierdo;
+                v.padre.derecho = verticeIzquierdo;
 
         v.izquierdo = verticeIzquierdo.derecho;
         if (verticeIzquierdo.hayDerecho())
@@ -282,18 +280,17 @@ public class ArbolBinarioOrdenado<T extends Comparable<T>>
      * @param vertice el vértice sobre el que vamos a girar.
      */
     public void giraIzquierda(VerticeArbolBinario<T> vertice) {
-        // TODO Falla en muy raros casos.
         if (vertice == null || !vertice.hayDerecho())
             return;
 
         Vertice v = vertice(vertice);
         Vertice verticeDerecho = v.derecho;
         verticeDerecho.padre = v.padre;
-        if (v != raiz)
+        if (v.padre != null)
             if (esHijoIzquierdo(v))
-                verticeDerecho.padre.izquierdo = verticeDerecho;
+                v.padre.izquierdo = verticeDerecho;
             else
-                verticeDerecho.padre.derecho = verticeDerecho;
+                v.padre.derecho = verticeDerecho;
         else
             raiz = verticeDerecho;
 
