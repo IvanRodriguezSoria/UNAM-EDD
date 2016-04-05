@@ -36,7 +36,7 @@ public class ArbolRojinegro<T extends Comparable<T>>
          */
         public VerticeRojinegro(T elemento) {
             super(elemento);
-            color = Color.ROJO;
+            color = Color.NINGUNO;
         }
 
         /**
@@ -44,8 +44,6 @@ public class ArbolRojinegro<T extends Comparable<T>>
          * @return una representación en cadena del vértice rojinegro.
          */
         public String toString() {
-            // TODO 
-            // Aveces falla sospecho es culpa de los giros.
             String s = "";
             if (color == Color.NEGRO)
                 s = "N";
@@ -145,12 +143,11 @@ public class ArbolRojinegro<T extends Comparable<T>>
     @Override public void agrega(T elemento) {
         super.agrega(elemento);
         VerticeRojinegro v = verticeRojinegro(ultimoAgregado);
+        v.color = Color.ROJO;
         balanceaAgrega(v);
     }
 
     private void balanceaAgrega(VerticeRojinegro v) {
-        // TODO 
-        // Falla en algunas ocaciones. Sospecho que es por los giros.
         VerticeRojinegro padre;
         VerticeRojinegro abuelo;
         VerticeRojinegro aux;
@@ -197,6 +194,9 @@ public class ArbolRojinegro<T extends Comparable<T>>
 
     // Regresa true en caso de que el vertice sea hijo izquierdo y false en otro caso.
     private boolean esHijoIzquierdo(ArbolBinario<T>.Vertice vertice) {
+        if (!vertice.hayPadre() )
+            return false;
+            
         return vertice.padre.izquierdo == vertice;
     }
 
@@ -265,7 +265,7 @@ public class ArbolRojinegro<T extends Comparable<T>>
             eliminado.color = Color.NEGRO;
             
         // Entramos a los 6 casos de rebalanceo.
-        //balanceaElimina(); TODO 
+        balanceaElimina(eliminado);
         
         // Si existe un fantasma llamamos a los caza fantasmas para quitarlo.
         if (existeFantasma)

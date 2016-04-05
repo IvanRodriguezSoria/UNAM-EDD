@@ -254,24 +254,28 @@ public class ArbolBinarioOrdenado<T extends Comparable<T>>
      * @param vertice el vértice sobre el que vamos a girar.
      */
     public void giraDerecha(VerticeArbolBinario<T> vertice) {
-        if (vertice == null || !vertice.hayIzquierdo())
+        // Agradecimisnetos a ANgel, Eder y Adri.
+        if (vertice == null || !vertice.hayIzquierdo()) {
             return;
-
-        Vertice v = vertice(vertice);
-        Vertice verticeIzquierdo = v.izquierdo;
-        verticeIzquierdo.padre = v.padre;
-        if (v.padre != null)
-            if (esHijoIzquierdo(v))
-                v.padre.izquierdo = verticeIzquierdo;
-            else
-                v.padre.derecho = verticeIzquierdo;
-
-        v.izquierdo = verticeIzquierdo.derecho;
-        if (verticeIzquierdo.hayDerecho())
-            verticeIzquierdo.derecho.padre = v;
-
-        v.padre = verticeIzquierdo;
-        verticeIzquierdo.derecho = v;
+        }
+        Vertice v = this.vertice(vertice);
+        Vertice vi = v.izquierdo;
+        vi.padre = v.padre;
+        if (v != this.raiz) {
+            if (this.esHijoIzquierdo(v)) {
+                vi.padre.izquierdo = vi;
+            } else {
+                vi.padre.derecho = vi;
+            }
+        } else {
+            this.raiz = vi;
+        }
+        v.izquierdo = vi.derecho;
+        if (vi.hayDerecho()) {
+            vi.derecho.padre = v;
+        }
+        v.padre = vi;
+        vi.derecho = v;
     }
 
     /**
@@ -280,26 +284,28 @@ public class ArbolBinarioOrdenado<T extends Comparable<T>>
      * @param vertice el vértice sobre el que vamos a girar.
      */
     public void giraIzquierda(VerticeArbolBinario<T> vertice) {
-        if (vertice == null || !vertice.hayDerecho())
+        // Agradecimisnetos a ANgel, Eder y Adri.
+        if (vertice == null || !vertice.hayDerecho()) {
             return;
-
-        Vertice v = vertice(vertice);
-        Vertice verticeDerecho = v.derecho;
-        verticeDerecho.padre = v.padre;
-        if (v.padre != null)
-            if (esHijoIzquierdo(v))
-                v.padre.izquierdo = verticeDerecho;
-            else
-                v.padre.derecho = verticeDerecho;
-        else
-            raiz = verticeDerecho;
-
-        v.derecho = verticeDerecho.izquierdo;
-        if (verticeDerecho.hayIzquierdo())
-            verticeDerecho.izquierdo.padre = v;
-
-        v.padre = verticeDerecho;
-        verticeDerecho.izquierdo = v;
+        }
+        Vertice v = this.vertice(vertice);
+        Vertice vd = v.derecho;
+        vd.padre = v.padre;
+        if (v != this.raiz) {
+            if (this.esHijoIzquierdo(v)) {
+                vd.padre.izquierdo = vd;
+            } else {
+                vd.padre.derecho = vd;
+            }
+        } else {
+            this.raiz = vd;
+        }
+        v.derecho = vd.izquierdo;
+        if (vd.hayIzquierdo()) {
+            vd.izquierdo.padre = v;
+        }
+        v.padre = vd;
+        vd.izquierdo = v;
     }
 
     // Nos dice si es hijo izquierdo. Usar hayPadre() antes de usar
