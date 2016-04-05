@@ -127,6 +127,9 @@ public class ArbolRojinegro<T extends Comparable<T>>
      *         VerticeRojinegro}.
      */
     public Color getColor(VerticeArbolBinario<T> vertice) {
+        if (vertice == null)
+            return Color.NEGRO;
+        
         if (!(vertice instanceof ArbolRojinegro.VerticeRojinegro) )
             throw new ClassCastException();
             
@@ -194,7 +197,7 @@ public class ArbolRojinegro<T extends Comparable<T>>
 
     // Regresa true en caso de que el vertice sea hijo izquierdo y false en otro caso.
     private boolean esHijoIzquierdo(ArbolBinario<T>.Vertice vertice) {
-        if (!vertice.hayPadre() )
+        if (vertice == null || !vertice.hayPadre() )
             return false;
             
         return vertice.padre.izquierdo == vertice;
@@ -229,55 +232,88 @@ public class ArbolRojinegro<T extends Comparable<T>>
      */
     @Override public void elimina(T elemento) {
         // Aquí va su código.
-        VerticeRojinegro v = verticeRojinegro(busca(elemento) );
-        VerticeRojinegro eliminado;
+        VerticeRojinegro eliminado = verticeRojinegro(busca(raiz, elemento) );
+        VerticeRojinegro auxiliar;
         boolean existeFantasma = false;
-        
-        if (v == null)
+
+        // Si no se encuenta el vertice con el elemento a eliminar termina.
+        if (eliminado == null)
             return;
-        
-        // Buscamos el maximo vertice del subarbol izquierdo.
-        // En caso de no existir eliminado es el mismo vertice.    
-        if (v.hayIzquierdo() )
-            eliminado = verticeRojinegro(maximoEnSubarbol(v.izquierdo) );
-        else 
-            eliminado = v;
-            
-        // Intercambia elemento con el vertice maximo del subarbol izquierdo.
-        // O con el mismo en caso de no haber subarbol izquierdo.
-        v.elemento = eliminado.elemento;
-        eliminado.elemento = elemento;
-        
-        // Si no tiene hijos creamos un vertice fantasma.
-        if (!tieneHijos(eliminado) ) {
-            eliminado.izquierdo = fantasma();
+
+        // Intercambiamos el vertice a eliminar por el maximo vertice en el
+        // subarbol izquierdo en caso de que exista.
+        if (eliminado.hayIzquierdo()) {
+            auxiliar = eliminado;
+            eliminado = verticeRojinegro(maximoEnSubarbol(eliminado.izquierdo) );
+            auxiliar.elemento = eliminado.elemento;
+        }
+
+        // Caso 1: Es hoja el vertice a eliminar.
+        if (!eliminado.hayIzquierdo() && !eliminado.hayDerecho()) {
+            VerticeRojinegro f = fantasma();
+            ultimoAgregado = f;
             existeFantasma = true;
+            if (raiz == eliminado) {
+                raiz = f;
+            } else if (esHijoIzquierdo(eliminado)) {
+                eliminado.padre.izquierdo = f;
+                f.padre = eliminado.padre;
+            } else {
+                eliminado.padre.derecho = f;
+                f.padre = eliminado.padre;
+            }
+        }
+
+        // Caso 2: No hay hijo derecho pero si izquierdo en el vertice a
+        // eliminar.
+        else if (!eliminado.hayDerecho()) {
+            if (raiz == eliminado) {
+                raiz = raiz.izquierdo;
+                raiz.padre = null;
+                verticeRojinegro(raiz).color = Color.NEGRO;
+            } else {
+                eliminado.izquierdo.padre = eliminado.padre;
+                if (esHijoIzquierdo(eliminado)) {
+                    eliminado.padre.izquierdo = eliminado.izquierdo;
+                    verticeRojinegro(eliminado.izquierdo).color = Color.NEGRO;
+                } else {
+                    eliminado.padre.derecho = eliminado.izquierdo;
+                    verticeRojinegro(eliminado.izquierdo).color = Color.NEGRO;
+                }
+            }
+        }
+
+        // Caso 3: No hay hijo izquierdo pero si derecho en el vertice a
+        // eliminar. Se usa else if en lugar de else para mayor claridad.
+        else if (!eliminado.hayIzquierdo()) {
+            if (raiz == eliminado) {
+                raiz = raiz.derecho;
+                raiz.padre = null;
+                verticeRojinegro(raiz).color = Color.NEGRO;
+            } else {
+                eliminado.derecho.padre = eliminado.padre;
+                if (esHijoIzquierdo(eliminado)) {
+                    eliminado.padre.izquierdo = eliminado.derecho;
+                    verticeRojinegro(eliminado.derecho).color = Color.NEGRO;
+                } else {
+                    eliminado.padre.derecho = eliminado.derecho;
+                    verticeRojinegro(eliminado.derecho).color = Color.NEGRO;
+                }
+            }
         }
         
-        // Subimos el hijo izquierdo o derecho.
-        if (eliminado.hayIzquierdo() )    
-            eliminado = subirHijoIzquierdo(eliminado);
-        else 
-            eliminado = subirHijoDerecho(eliminado);
-        
-        // Cambiamos el color del vertice si este es rojo.
-        if (eliminado.color == Color.ROJO)
-            eliminado.color = Color.NEGRO;
-            
         // Entramos a los 6 casos de rebalanceo.
         balanceaElimina(eliminado);
         
         // Si existe un fantasma llamamos a los caza fantasmas para quitarlo.
         if (existeFantasma)
             ghostBusters(ultimoAgregado);
-            
-        // Restamos el numero de elementos.
+
         --elementos;
     }
     
     // TODO 
     private void balanceaElimina(ArbolBinario<T>.Vertice vertice) {
-        // TODO 
         VerticeRojinegro hermano, padre, aux, v;
         v = verticeRojinegro(vertice);
         
@@ -293,14 +329,19 @@ public class ArbolRojinegro<T extends Comparable<T>>
         if (hermano != null && hermano.color == Color.ROJO) {
             hermano.color = Color.NEGRO;
             padre.color = Color.ROJO;
-            if (esHijoIzquierdo(v))
+            if (esHijoIzquierdo(v)) {
                 giraIzquierda(padre);
-            else 
+                // TODO Aqui no entiendo como cambiar las referencias.
+                hermano = padre;
+                padre = v;
+                v = verticeRojinegro(v.derecho);
+            } else { 
                 giraDerecha(padre);
-            
-            aux = padre;
-            padre = v;
-            v = aux;
+                // TODO Aqui no entiendo como cambiar las referencias.
+                v = padre;
+                padre = hermano;
+                hermano = verticeRojinegro(padre.derecho);
+            }
         }
         
         // Caso 3:
@@ -316,11 +357,63 @@ public class ArbolRojinegro<T extends Comparable<T>>
             hermano.color = Color.ROJO;
             return;
         }
+        
+        // Caso 5:
+        if (hayHijosBicoloresCruzados(hermano) ) {
+            if (getColor(hermano.izquierdo) == Color.ROJO )
+                verticeRojinegro(hermano.izquierdo).color = Color.NEGRO;
+            else 
+                verticeRojinegro(hermano.derecho).color = Color.NEGRO;
+            
+            hermano.color = Color.ROJO;
+            
+            if (esHijoIzquierdo(v) )
+                giraIzquierda(hermano);
+            else 
+                giraDerecha(hermano);
+        }
+        
+        // Caso 6:
+        if (sobrinoCruzadoEsRojo(v) ) {
+            hermano.color = padre.color;
+            padre.color = Color.NEGRO;
+            if (esHijoIzquierdo(v) ) {
+                verticeRojinegro(hermano.derecho).color = Color.NEGRO;
+                giraIzquierda(padre);
+            } else { 
+                verticeRojinegro(hermano.izquierdo).color = Color.NEGRO;
+                giraDerecha(padre);
+            }
+            
+            return;
+        }
+    }
+    
+    private boolean sobrinoCruzadoEsRojo(ArbolBinario<T>.Vertice v) {
+        VerticeRojinegro hermano = getHermano(v);
+        
+        if (esHijoIzquierdo(v) )
+            return getColor(hermano.derecho) == Color.ROJO;
+        if (!esHijoIzquierdo(v) )
+            return getColor(hermano.izquierdo) == Color.ROJO;
+            
+        return false;
+    }
+    
+    // Nos dice si el vertice tiene hijos bicolores cruzados.
+    private boolean hayHijosBicoloresCruzados(ArbolBinario<T>.Vertice v) {
+        if (esHijoIzquierdo(v) && getColor(v.derecho) == Color.ROJO && getColor(v.izquierdo) == Color.NEGRO)
+            return true;
+            
+        if (!esHijoIzquierdo(v) && getColor(v.izquierdo) == Color.ROJO && getColor(v.derecho) == Color.NEGRO)
+            return true;
+                
+        return false;
     }
     
     // Regresa al hermano del vertice. Ya se debe saber si existe padre.
     private VerticeRojinegro getHermano(ArbolBinario<T>.Vertice v) {
-        if (esHijoIzquierdo(v))
+        if (esHijoIzquierdo(v) )
             return verticeRojinegro(v.padre.derecho);
         else 
             return verticeRojinegro(v.padre.izquierdo);
@@ -328,19 +421,10 @@ public class ArbolRojinegro<T extends Comparable<T>>
     
     // Regresa true en caso de que los hijos sean negros, false de lo contrario.
     private boolean sonHijosNegros(ArbolBinario<T>.Vertice v) {
-        if (!tieneHijos(v) )
+        if (getColor(v.izquierdo) == Color.NEGRO && getColor(v.derecho) == Color.NEGRO )
+            return true;
+        else 
             return false;
-        
-        if (v.derecho != null && v.izquierdo != null)
-            return verticeRojinegro(v.derecho).color == Color.NEGRO && verticeRojinegro(v.izquierdo).color == Color.NEGRO;
-            
-        if (v.derecho == null && v.izquierdo != null)
-            return verticeRojinegro(v.izquierdo).color == Color.NEGRO;
-            
-        if (v.derecho != null && v.izquierdo == null)
-            return verticeRojinegro(v.derecho).color == Color.NEGRO;
-            
-        return false;
     }
     
     // Regresa true en caso de que el vertice tenga almenos un hijo, false en otro caso.
@@ -389,8 +473,11 @@ public class ArbolRojinegro<T extends Comparable<T>>
     
     // Caza fantasmas que destruyen al maldito.
     private void ghostBusters(ArbolBinario<T>.Vertice fantasma) {
-        fantasma.padre.izquierdo = null;
-        fantasma.padre = null;
+        if (fantasma.padre == null)
+            raiz = null;
+        else 
+            fantasma.padre.izquierdo = null;
+            fantasma.padre = null;
     }
     
 }
