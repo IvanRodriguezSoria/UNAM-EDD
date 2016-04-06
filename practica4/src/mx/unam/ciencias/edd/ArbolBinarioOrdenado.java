@@ -225,6 +225,10 @@ public class ArbolBinarioOrdenado<T extends Comparable<T>>
         else
             return busca(vertice.derecho, elemento);
     }
+    
+    @Override public Vertice busca(T elemento) {
+        return busca(raiz, elemento);
+    }
 
     /**
      * Regresa el vértice máximo en el subárbol cuya raíz es el vértice que
