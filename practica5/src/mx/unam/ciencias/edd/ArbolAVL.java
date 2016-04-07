@@ -56,6 +56,7 @@ public class ArbolAVL<T extends Comparable<T>>
             return auxEquals(this, vertice);
         }
         
+        // Metodo auxuliar para el metodo equals. Regresa verdadero si dos arboles son iguales.
         private boolean auxEquals(VerticeAVL v1, VerticeAVL v2) {
             VerticeAVL v1Izq, v2Izq, v1Der, v2Der;
             
@@ -89,18 +90,24 @@ public class ArbolAVL<T extends Comparable<T>>
         rebalanceaArbol(v);
     }
     
+    // Metodo auxiliar que rebalancea el arbolAVL.
     private void rebalanceaArbol(VerticeAVL v) {
+        // Clausula de escape. Llegamos al padre de la raiz.
         if (v == null)
             return;
             
         VerticeAVL vi = verticeAVL(v.izquierdo);
         VerticeAVL vd = verticeAVL(v.derecho);
         
+        // Calculamos la altura del vertice actual y su padre.
         cambiaAltura(v);
         if (v.padre != null)
             cambiaAltura(v.padre);
             
+        // Caso 1: El balance de v es -2. Siempre giramos a la izquiero excepto cuando no.
         if (balance(v) == -2) {
+            
+            // Giramos a la derecha si el balance del hijo derecho de v es 1.
             if (balance(vd) == 1) {
                 super.giraDerecha(vd);
                 cambiaAltura(vd);
@@ -111,7 +118,10 @@ public class ArbolAVL<T extends Comparable<T>>
             cambiaAltura(v);
         }
         
+        // Caso 2: El balance de v es 2. Siempre giramos a derecha excepto cuando no.
         else if (balance(v) == 2) {
+            
+            // Giramos a la izquierda si el balance del hijo izquierdo de v es -1.
             if (balance(vi) == -1) {
                 super.giraIzquierda(vi);
                 cambiaAltura(vi);
@@ -122,9 +132,12 @@ public class ArbolAVL<T extends Comparable<T>>
             cambiaAltura(v);
         }
         
+        // Llamamos al metodo recursivamente.
         rebalanceaArbol(verticeAVL(v.padre) );
     }
     
+    // Recalcula la altura del vertice y la cambia.
+    // La altura de un vertice null es -1.
     private void cambiaAltura(VerticeArbolBinario<T> vertice) {
         VerticeAVL v = verticeAVL(vertice);
         VerticeAVL vi = verticeAVL(v.izquierdo);
@@ -132,6 +145,8 @@ public class ArbolAVL<T extends Comparable<T>>
         v.altura = 1 + Math.max(getAltura(vi), getAltura(vd) );
     }
     
+    // Regresa el balance del vertice. Balance es la resta de la altura izquierda 
+    // menos la altura derecha.
     private int balance(VerticeArbolBinario<T> vertice) {
         VerticeAVL v = verticeAVL(vertice);
         VerticeAVL vi = verticeAVL(v.izquierdo);
@@ -198,6 +213,7 @@ public class ArbolAVL<T extends Comparable<T>>
         rebalanceaArbol(verticeAVL(eliminado.padre) );
     }
     
+    // Regresa true en caso de que el vertice sea hijo izquierdo y false en otro caso.
     private boolean esHijoIzquierdo(VerticeArbolBinario<T> vertice) {
         VerticeAVL v = verticeAVL(vertice);
         return v.padre.izquierdo == v;
