@@ -34,7 +34,7 @@ public class ArbolAVL<T extends Comparable<T>>
          */
         public String toString() {
             // Aquí va su código.
-            return elemento + " " + altura + "/0";
+            return elemento + " " + altura + "/" + balance(this);
         }
 
         /**
@@ -84,20 +84,59 @@ public class ArbolAVL<T extends Comparable<T>>
      * @param elemento el elemento a agregar.
      */
     @Override public void agrega(T elemento) {
-        // Aquí va su código.
-        // TODO
         super.agrega(elemento);
         VerticeAVL v = verticeAVL(ultimoAgregado);
         rebalanceaArbol(v);
     }
     
-    private void rebalanceaArbol(ArbolBinario<T>.Vertice vertice) {
-        VerticeAVL v = verticeAVL(vertice);
-        if (v == null) {
+    private void rebalanceaArbol(VerticeAVL v) {
+        if (v == null)
             return;
+            
+        VerticeAVL vi = verticeAVL(v.izquierdo);
+        VerticeAVL vd = verticeAVL(v.derecho);
+        
+        cambiaAltura(v);
+        if (v.padre != null)
+            cambiaAltura(v.padre);
+            
+        if (balance(v) == -2) {
+            if (balance(vd) == 1) {
+                super.giraDerecha(vd);
+                cambiaAltura(vd);
+                cambiaAltura(vd.padre);
+            }
+            
+            super.giraIzquierda(v);
+            cambiaAltura(v);
         }
         
-        // TODO
+        else if (balance(v) == 2) {
+            if (balance(vi) == -1) {
+                super.giraIzquierda(vi);
+                cambiaAltura(vi);
+                cambiaAltura(vi.padre);
+            }
+            
+            super.giraDerecha(v);
+            cambiaAltura(v);
+        }
+        
+        rebalanceaArbol(verticeAVL(v.padre) );
+    }
+    
+    private void cambiaAltura(VerticeArbolBinario<T> vertice) {
+        VerticeAVL v = verticeAVL(vertice);
+        VerticeAVL vi = verticeAVL(v.izquierdo);
+        VerticeAVL vd = verticeAVL(v.derecho);
+        v.altura = 1 + Math.max(getAltura(vi), getAltura(vd) );
+    }
+    
+    private int balance(VerticeArbolBinario<T> vertice) {
+        VerticeAVL v = verticeAVL(vertice);
+        VerticeAVL vi = verticeAVL(v.izquierdo);
+        VerticeAVL vd = verticeAVL(v.derecho);
+        return getAltura(vi) - getAltura(vd);
     }
 
     /**
@@ -119,6 +158,9 @@ public class ArbolAVL<T extends Comparable<T>>
      *         VerticeAVL}.
      */
     public int getAltura(VerticeArbolBinario<T> vertice) {
+        if (vertice == null)
+            return -1;
+            
         return verticeAVL(vertice).altura;
     }
 
