@@ -146,8 +146,61 @@ public class ArbolAVL<T extends Comparable<T>>
      * @param elemento el elemento a eliminar del árbol.
      */
     @Override public void elimina(T elemento) {
-        // Aquí va su código.
-        // TODO.
+        VerticeAVL eliminado = verticeAVL(super.busca(raiz, elemento) );
+        VerticeAVL auxiliar;
+        
+        if (eliminado == null)
+            return;
+            
+        if (eliminado.hayIzquierdo() ) {
+            auxiliar = eliminado;
+            eliminado = verticeAVL(maximoEnSubarbol(eliminado.izquierdo) );
+            auxiliar.elemento = eliminado.elemento;
+        }
+        
+        if (!eliminado.hayIzquierdo() && !eliminado.hayDerecho()) {
+            if (raiz == eliminado) {
+                raiz = null;
+            } else if (esHijoIzquierdo(eliminado))
+                eliminado.padre.izquierdo = null;
+            else
+                eliminado.padre.derecho = null;
+        }
+        
+        else if (!eliminado.hayDerecho()) {
+            if (raiz == eliminado) {
+                raiz = raiz.izquierdo;
+                raiz.padre = null;
+            } else {
+                eliminado.izquierdo.padre = eliminado.padre;
+                if (esHijoIzquierdo(eliminado))
+                    eliminado.padre.izquierdo = eliminado.izquierdo;
+                else
+                    eliminado.padre.derecho = eliminado.izquierdo;
+            }
+        }
+        
+        else if (!eliminado.hayIzquierdo()) {
+            if (raiz == eliminado) {
+                raiz = raiz.derecho;
+                raiz.padre = null;
+            } else {
+                eliminado.derecho.padre = eliminado.padre;
+                if (esHijoIzquierdo(eliminado))
+                    eliminado.padre.izquierdo = eliminado.derecho;
+                else
+                    eliminado.padre.derecho = eliminado.derecho;
+            }
+        }
+        
+        --elementos;
+        
+        rebalanceaArbol(verticeAVL(eliminado.padre) );
+    }
+    
+    private boolean esHijoIzquierdo(VerticeArbolBinario<T> vertice) {
+        VerticeAVL v = verticeAVL(vertice);
+        return v.padre.izquierdo == v;
     }
 
     /**
