@@ -99,10 +99,8 @@ public class ArbolAVL<T extends Comparable<T>>
         VerticeAVL vi = verticeAVL(v.izquierdo);
         VerticeAVL vd = verticeAVL(v.derecho);
         
-        // Calculamos la altura del vertice actual y su padre.
+        // Calculamos la altura del vertice actual.
         cambiaAltura(v);
-        if (v.padre != null)
-            cambiaAltura(v.padre);
             
         // Caso 1: El balance de v es -2. Siempre giramos a la izquiero excepto cuando no.
         if (balance(v) == -2) {
@@ -111,7 +109,6 @@ public class ArbolAVL<T extends Comparable<T>>
             if (balance(vd) == 1) {
                 super.giraDerecha(vd);
                 cambiaAltura(vd);
-                cambiaAltura(vd.padre);
             }
             
             super.giraIzquierda(v);
@@ -125,7 +122,6 @@ public class ArbolAVL<T extends Comparable<T>>
             if (balance(vi) == -1) {
                 super.giraIzquierda(vi);
                 cambiaAltura(vi);
-                cambiaAltura(vi.padre);
             }
             
             super.giraDerecha(v);
