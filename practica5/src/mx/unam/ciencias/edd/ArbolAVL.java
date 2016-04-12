@@ -160,15 +160,19 @@ public class ArbolAVL<T extends Comparable<T>>
         VerticeAVL eliminado = verticeAVL(super.busca(raiz, elemento) );
         VerticeAVL auxiliar;
         
+        // Si no se encontro el vertice con el elemento a eliminar terminamos.
         if (eliminado == null)
             return;
             
+        // Si hay sub arbol izquierdo buscamos el maximo e intercambiamos su elemento 
+        // por el elemento a eliminar.
         if (eliminado.hayIzquierdo() ) {
             auxiliar = eliminado;
             eliminado = verticeAVL(maximoEnSubarbol(eliminado.izquierdo) );
             auxiliar.elemento = eliminado.elemento;
         }
         
+        // Si no tiene hijos cambiamos referencias.
         if (!eliminado.hayIzquierdo() && !eliminado.hayDerecho()) {
             if (raiz == eliminado) {
                 raiz = null;
@@ -178,6 +182,7 @@ public class ArbolAVL<T extends Comparable<T>>
                 eliminado.padre.derecho = null;
         }
         
+        // Si solo tiene hijo izquierdo cambiamos referencias.
         else if (!eliminado.hayDerecho()) {
             if (raiz == eliminado) {
                 raiz = raiz.izquierdo;
@@ -191,6 +196,7 @@ public class ArbolAVL<T extends Comparable<T>>
             }
         }
         
+        // Si solo tiene hijo derecho cambiamos referencias.
         else if (!eliminado.hayIzquierdo()) {
             if (raiz == eliminado) {
                 raiz = raiz.derecho;
@@ -206,6 +212,7 @@ public class ArbolAVL<T extends Comparable<T>>
         
         --elementos;
         
+        // Rebalanceamos al arbol una vez que eliminamos el vertice con el elemento.
         rebalanceaArbol(verticeAVL(eliminado.padre) );
     }
     

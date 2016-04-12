@@ -36,7 +36,10 @@ public class ArbolRojinegro<T extends Comparable<T>>
          */
         public VerticeRojinegro(T elemento) {
             super(elemento);
-            color = Color.NINGUNO;
+            if (elemento == null)
+                color = Color.NEGRO;
+            else 
+                color = Color.ROJO;
         }
 
         /**
@@ -128,11 +131,7 @@ public class ArbolRojinegro<T extends Comparable<T>>
      */
     public Color getColor(VerticeArbolBinario<T> vertice) {
         if (vertice == null)
-            return Color.NEGRO;
-        
-        if (!(vertice instanceof ArbolRojinegro.VerticeRojinegro) )
-            throw new ClassCastException();
-            
+            return Color.NEGRO;    
         VerticeRojinegro v = verticeRojinegro(vertice);
         return v.color;
     }
@@ -151,6 +150,7 @@ public class ArbolRojinegro<T extends Comparable<T>>
     }
 
     private void balanceaAgrega(VerticeRojinegro v) {
+        // TODO fallo equals una vez.
         VerticeRojinegro padre;
         VerticeRojinegro abuelo;
         VerticeRojinegro aux;
@@ -160,11 +160,13 @@ public class ArbolRojinegro<T extends Comparable<T>>
             v.color = Color.NEGRO;
             return;
         }
+        
         // Caso 2:
         padre = verticeRojinegro(v.padre);
         if (getColor(padre) == Color.NEGRO) {
             return;
         }
+        
         // Caso 3:
         abuelo = verticeRojinegro(padre.padre);
         if (existeTio(v) && getTio(v).color == Color.ROJO ) {
@@ -196,12 +198,14 @@ public class ArbolRojinegro<T extends Comparable<T>>
     }
 
     // Regresa true en caso de que el vertice sea hijo izquierdo y false en otro caso.
-    private boolean esHijoIzquierdo(ArbolBinario<T>.Vertice vertice) { 
-        return vertice.padre.izquierdo == vertice;
+    private boolean esHijoIzquierdo(VerticeArbolBinario<T> vertice) {
+        VerticeRojinegro v = verticeRojinegro(vertice);
+        return verticeRojinegro(v.padre.izquierdo) == v;
     }
 
     // Regresa al tio del vertice. Se debe usar en conjunto con existeTio().
-    private VerticeRojinegro getTio(ArbolBinario<T>.Vertice v) {
+    private VerticeRojinegro getTio(VerticeArbolBinario<T> vertice) {
+        VerticeRojinegro v = verticeRojinegro(vertice);
         if (esHijoIzquierdo(v.padre) )
             return verticeRojinegro(v.padre.padre.derecho);
         else
@@ -209,7 +213,15 @@ public class ArbolRojinegro<T extends Comparable<T>>
     }
     
     // Regresa true en caso de que exista un tio del vertice y false en otro caso.
-    private boolean existeTio(ArbolBinario<T>.Vertice v) {
+    private boolean existeTio(VerticeArbolBinario<T> vertice) {
+        if (vertice == null)
+            return false;
+            
+        VerticeRojinegro v = verticeRojinegro(vertice);
+        
+        if (v.padre == null || v.padre.padre == null)
+            return false;
+            
         return v.padre.padre.derecho != null && v.padre.padre.izquierdo != null;
     }
 
@@ -217,8 +229,193 @@ public class ArbolRojinegro<T extends Comparable<T>>
     // Si el padre es hijo derecho y el vertice es hijo izquierdo regresa true.
     // Si el padre es hijo izquierdo y el vertice es hijo derecho regresa true.
     // false en otro caso.
-    private boolean esVerticeCruzado(ArbolBinario<T>.Vertice v) {
+    private boolean esVerticeCruzado(VerticeArbolBinario<T> vertice) {
+        if (vertice == null)
+            return false;
+            
+        VerticeRojinegro v = verticeRojinegro(vertice);
+        
+        if (v.padre == null)
+            return false;
+            
         return esHijoIzquierdo(v) != esHijoIzquierdo(v.padre);
+    }
+    
+    ///////////////////////////////////////////////////////////////////////////////
+    // DEBO COMPRENDER MEJOR ESTE BLOQUE.
+    ///////////////////////////////////////////////////////////////////////////////
+    
+    private void eliminaHoja(Vertice eliminar) {
+        if (this.raiz == eliminar) {
+            this.raiz = null;
+            this.ultimoAgregado = null;
+        } else if (this.esHijoIzquierdo(eliminar)) {
+            eliminar.padre.izquierdo = null;
+        } else {
+            eliminar.padre.derecho = null;
+        }
+    }
+
+    private void eliminaSinHijoIzquierdo(Vertice eliminar) {
+        if (this.raiz == eliminar) {
+            this.raiz = this.raiz.derecho;
+            eliminar.derecho.padre = null;
+        } else {
+            eliminar.derecho.padre = eliminar.padre;
+            if (this.esHijoIzquierdo(eliminar)) {
+                eliminar.padre.izquierdo = eliminar.derecho;
+            } else {
+                eliminar.padre.derecho = eliminar.derecho;
+            }
+        }
+        this.elementos--;
+    }
+
+    private void eliminaSinHijoDerecho(Vertice eliminar) {
+        if (this.raiz == eliminar) {
+            this.raiz = this.raiz.izquierdo;
+            eliminar.izquierdo.padre = null;
+        } else {
+            eliminar.izquierdo.padre = eliminar.padre;
+            if (this.esHijoIzquierdo(eliminar)) {
+                eliminar.padre.izquierdo = eliminar.izquierdo;
+            } else {
+                eliminar.padre.derecho = eliminar.izquierdo;
+            }
+        }
+        this.elementos--;
+    }
+
+    private boolean sonVerticesBicoloreados(VerticeRojinegro v1, VerticeRojinegro v2) {
+        return this.esNegro(v1) != this.esNegro(v2);
+    }
+
+    private void subirUnicoHijo(Vertice padre) {
+        if (!padre.hayIzquierdo()) {
+            this.eliminaSinHijoIzquierdo(padre);
+        } else {
+            this.eliminaSinHijoDerecho(padre);
+        }
+    }
+
+    private VerticeRojinegro getUnicoHijo(VerticeRojinegro padre) {
+        if (padre.hayIzquierdo()) {
+            return verticeRojinegro(padre.izquierdo);
+        }
+        return verticeRojinegro(padre.derecho);
+    }
+
+    private VerticeRojinegro getHermano(VerticeRojinegro vertice) {
+        if (this.esHijoIzquierdo(vertice)) {
+            return verticeRojinegro(vertice.padre.derecho);
+        }
+        return verticeRojinegro(vertice.padre.izquierdo);
+    }
+
+    private boolean esNegro(VerticeRojinegro vertice) {
+        return vertice == null || vertice.color == Color.NEGRO;
+    }
+
+    private void rebalanceoElimina(VerticeRojinegro vertice) {
+        VerticeRojinegro hermano, padre, sobrinoIzq, sobrinoDer;
+        
+        // Caso 1: El padre es null.
+        if (!vertice.hayPadre()) {
+            // Asignamos la raiz al vertice.
+            this.raiz = vertice;
+            // Terminamos
+            return;
+        }
+        padre = verticeRojinegro(vertice.padre);
+        hermano = this.getHermano(vertice);
+        
+        // Caso 2: El hermano es rojo.
+        if (!this.esNegro(hermano)) {
+            // Coloreamos la hermano de Negro.
+            hermano.color = Color.NEGRO;
+            // Coloreamos la padre de Rojo.
+            padre.color = Color.ROJO;
+            // Giramos sobre al padre en la direccion del vertice.
+            if (this.esHijoIzquierdo(vertice)) {
+                super.giraIzquierda(padre);
+            } else {
+                super.giraDerecha(padre);
+            }
+            // Cambiamos referencias de padre y hermano.
+            padre = verticeRojinegro(vertice.padre);
+            hermano = this.getHermano(vertice);
+        }
+        sobrinoIzq = verticeRojinegro(hermano.izquierdo);
+        sobrinoDer = verticeRojinegro(hermano.derecho);
+        
+        // Caso 3: El padre, el hermano y los sobrinos son negros.
+        if (this.esNegro(hermano) && this.esNegro(sobrinoIzq) && this.esNegro(sobrinoDer)) {
+            if (this.esNegro(padre)) {
+                // Coloreamos al hermano de Rojo.
+                hermano.color = Color.ROJO;
+                // Hacemos recursion sobre el padre.
+                this.rebalanceoElimina(padre);
+                // Terminamos
+                return;
+            }
+            
+            // Caso 4: Hermano y sobrinos negros, padre rojo.
+            
+            // Coloreamos al padre de Negro.
+            padre.color = Color.NEGRO;
+            // Coloreamos al hermano de Rojo.
+            hermano.color = Color.ROJO;
+            // Terminados.
+            return;
+        }
+        
+        // Caso 5: Los sobrinos son bicoloreados y el sobrino cruzado es Negro.
+        if (this.sonVerticesBicoloreados(sobrinoIzq, sobrinoDer) && (
+            // Evaluando si un sobrino es cruzado
+            (this.esNegro(sobrinoIzq) && !this.esHijoIzquierdo(vertice)) || (this.esNegro(sobrinoDer) && this.esHijoIzquierdo(vertice)))) {
+            // Coloreamos al sobrino Rojo de Negro
+            if (!this.esNegro(sobrinoIzq)) {
+                sobrinoIzq.color = Color.NEGRO;
+            } else {
+                sobrinoDer.color = Color.NEGRO;
+            }
+            // Coloreamos al hermano de Rojo
+            hermano.color = Color.ROJO;
+            //Giramos sobre el hermano en la direccion contraria al vertice
+            if (this.esHijoIzquierdo(vertice)) {
+                super.giraDerecha(hermano);
+            } else {
+                super.giraIzquierda(hermano);
+            }
+            hermano = this.getHermano(vertice);
+            sobrinoIzq = verticeRojinegro(hermano.izquierdo);
+            sobrinoDer = verticeRojinegro(hermano.derecho);
+        }
+        
+        // Caso 6: El sobrino cruzado es rojo.
+        
+        // Coloreamos al hermano del color del padre
+        hermano.color = padre.color;
+        // Coloreamos al padre de negro
+        padre.color = Color.NEGRO;
+        // Coloreamos al sobrino cruzado de Negro
+        if (this.esHijoIzquierdo(vertice)) {
+            sobrinoDer.color = Color.NEGRO;
+        } else {
+            sobrinoIzq.color = Color.NEGRO;
+        }
+        // Giramos sobre el padre en la direccion del vertice
+        if (this.esHijoIzquierdo(vertice)) {
+            super.giraIzquierda(padre);
+        } else {
+            super.giraDerecha(padre);
+        }
+    }
+
+    private void eliminarFantasma(VerticeRojinegro eliminar) {
+        if (eliminar.elemento == null) {
+            eliminaHoja(eliminar);
+        }
     }
 
     /**
@@ -228,211 +425,50 @@ public class ArbolRojinegro<T extends Comparable<T>>
      * @param elemento el elemento a eliminar del árbol.
      */
     @Override public void elimina(T elemento) {
-        // TODO
-        VerticeRojinegro eliminado = verticeRojinegro(busca(raiz, elemento) );
-        VerticeRojinegro auxiliar;
-        boolean existeFantasma = false;
-
-        // Si no se encuenta el vertice con el elemento a eliminar termina.
-        if (eliminado == null)
-            return;
-
-        // Intercambiamos el vertice a eliminar por el maximo vertice en el
-        // subarbol izquierdo en caso de que exista.
-        if (eliminado.hayIzquierdo()) {
-            auxiliar = verticeRojinegro(maximoEnSubarbol(eliminado.izquierdo) );
-            eliminado.elemento = auxiliar.elemento;
-            eliminado = auxiliar;
-        }
-
-        // Caso 1: Es hoja el vertice a eliminar.
-        if (!eliminado.hayIzquierdo() && !eliminado.hayDerecho()) {
-            VerticeRojinegro f = fantasma();
-            existeFantasma = true;
-            if (!eliminado.hayPadre() )
-                raiz = f;
-            else if (esHijoIzquierdo(eliminado) )
-                eliminado.padre.izquierdo = f;
-            else 
-                eliminado.padre.derecho = f;
-                
-            f.padre = eliminado.padre;
-            
-            if (getColor(eliminado) != Color.NEGRO ) {
-                eliminado = f;
-                balanceaElimina(eliminado);
-            }
-            
-        }
-
-        // Caso 2: No hay hijo derecho pero si izquierdo en el vertice a
-        // eliminar.
-        else if (!eliminado.hayDerecho()) {
-            eliminado.izquierdo.padre = eliminado.padre;
-            if (!eliminado.hayPadre() )
-                raiz = eliminado.izquierdo;
-            else if (esHijoIzquierdo(eliminado))
-                eliminado.padre.izquierdo = eliminado.izquierdo;
-            else
-                eliminado.padre.derecho = eliminado.izquierdo;
-                
-            if (getColor(eliminado) != getColor(eliminado.izquierdo) ) {
-                verticeRojinegro(eliminado.izquierdo).color = Color.NEGRO;
-                eliminado = verticeRojinegro(eliminado.izquierdo);
-                
-                // Entramos a los 6 casos de rebalanceo.
-                balanceaElimina(eliminado);
-            }
-        }
-
-        // Caso 3: No hay hijo izquierdo pero si derecho en el vertice a
-        // eliminar. Se usa else if en lugar de else para mayor claridad.
-        else if (!eliminado.hayIzquierdo()) {
-            eliminado.derecho.padre = eliminado.padre;
-            if (esHijoIzquierdo(eliminado))
-                eliminado.padre.izquierdo = eliminado.derecho;
-            else
-                eliminado.padre.derecho = eliminado.derecho;
-                
-            if (getColor(eliminado) != getColor(eliminado.derecho) ) {
-                verticeRojinegro(eliminado.derecho).color = Color.NEGRO;
-                eliminado = verticeRojinegro(eliminado.derecho);
-                
-                // Entramos a los 6 casos de rebalanceo.
-                balanceaElimina(eliminado);
-            }
-        }
-        
-        // Si existe un fantasma llamamos a los caza fantasmas para quitarlo.
-        if (existeFantasma)
-            ghostBusters(ultimoAgregado);
-
-        --elementos;
-    }
-    
-    // TODO 
-    private void balanceaElimina(ArbolBinario<T>.Vertice vertice) {
-        VerticeRojinegro hermano, padre, aux, v;
-        v = verticeRojinegro(vertice);
-        
-        // Caso 1:
-        if (v.padre == null) {
-            raiz = v;
+        VerticeRojinegro aux, hijo;
+        // Buscamos el vertice que tiene el elemento que queremos eliminar.
+        VerticeRojinegro eliminar = this.verticeRojinegro(super.busca(elemento));
+        // Si no lo encontro, simplemente terminamos.
+        if (eliminar == null) {
             return;
         }
-        
-        // Caso 2:
-        padre = verticeRojinegro(v.padre);
-        hermano = getHermano(v);
-        if (hermano != null && hermano.color == Color.ROJO) {
-            hermano.color = Color.NEGRO;
-            padre.color = Color.ROJO;
-            // TODO Me parece que el problema esta aqui.
-            if (esHijoIzquierdo(v)) {
-                super.giraIzquierda(padre);
-                hermano = padre;
-                padre = v;
-                v = verticeRojinegro(v.derecho);
-            } else { 
-                super.giraDerecha(padre);
-                v = padre;
-                padre = verticeRojinegro(padre.izquierdo);
-                hermano = verticeRojinegro(padre.izquierdo);
-            }
+        // Si tiene hijo izquierdo.
+        if (eliminar.hayIzquierdo()) {
+            // Obtenemos el Vertice que es maximo en el subarbol izquierdo del vertice que
+            // queremos eliminar.
+            aux = verticeRojinegro(maximoEnSubarbol(eliminar.izquierdo));
+            // Intercambiamos el elemento que tiene el vertice que queremos eliminar
+            // con el del maximo en el subarbol izquierdo.
+            eliminar.elemento = aux.elemento;
+            // Ahora ya queremos eliminar al maximo del subarbol izquierdo.
+            eliminar = aux;
         }
-        
-        // Caso 3:
-        if (padre.color == Color.NEGRO && hermano.color == Color.NEGRO && sonHijosNegros(hermano)) {
-            hermano.color = Color.ROJO;
-            balanceaElimina(padre);
-            return;
+        // Vertificamos si el que queremos eliminar es hoja.
+        if (!eliminar.hayIzquierdo() && !eliminar.hayDerecho()) {
+            // Creamos un vertice fantasma y lo ponemos como hijo del vertice que queremos
+            // eliminar.
+            eliminar.izquierdo = this.nuevoVertice(null);
+            eliminar.izquierdo.padre = eliminar;
         }
-        
-        // Caso 4:
-        if (padre.color == Color.ROJO && hermano.color == Color.NEGRO && sonHijosNegros(hermano)) {
-            padre.color = Color.NEGRO;
-            hermano.color = Color.ROJO;
-            return;
+        // En esta parte el vertice que queremos eliminar siempre tiene solo un hijo.
+        // Obtenemos el unico hijo que tiene el vertice que queremos eliminar.
+        hijo = getUnicoHijo(eliminar);
+        // Subimos el unico hijo del vertice que queremos eliminar.
+        this.subirUnicoHijo(eliminar);
+        // Si tenian diferentes colores el hijo y el vertice que queremos eliminar, rebalanceamos.
+        if (!this.sonVerticesBicoloreados(eliminar, hijo)) {
+            hijo.color = Color.NEGRO;
+            this.rebalanceoElimina(hijo);
+        } else {
+            hijo.color = Color.NEGRO;
         }
-        
-        // Caso 5:
-        if (hayHijosBicoloresCruzados(hermano) ) {
-            if (getColor(hermano.izquierdo) == Color.ROJO )
-                verticeRojinegro(hermano.izquierdo).color = Color.NEGRO;
-            else 
-                verticeRojinegro(hermano.derecho).color = Color.NEGRO;
-            
-            hermano.color = Color.ROJO;
-            
-            if (esHijoIzquierdo(v) ) {
-                super.giraIzquierda(hermano);
-                hermano = verticeRojinegro(hermano.derecho);
-            } else { 
-                super.giraDerecha(hermano);
-                hermano = verticeRojinegro(hermano.izquierdo);
-            }
-        }
-        
-        // Caso 6:
-        hermano.color = padre.color;
-        padre.color = Color.NEGRO;
-        if (esHijoIzquierdo(v) ) {
-            verticeRojinegro(hermano.derecho).color = Color.NEGRO;
-            super.giraIzquierda(padre);
-        } else { 
-            verticeRojinegro(hermano.izquierdo).color = Color.NEGRO;
-            super.giraDerecha(padre);
-        }
+        // Eliminamos el vertice fantasma si lo hay
+        this.eliminarFantasma(hijo);
     }
     
-    // Nos dice si el vertice tiene hijos bicolores cruzados. Ya se debe saber que existe padre.
-    private boolean hayHijosBicoloresCruzados(ArbolBinario<T>.Vertice v) {
-        if (esHijoIzquierdo(v) && getColor(v.derecho) == Color.ROJO && getColor(v.izquierdo) == Color.NEGRO)
-            return true;        
-        if (!esHijoIzquierdo(v) && getColor(v.izquierdo) == Color.ROJO && getColor(v.derecho) == Color.NEGRO)
-            return true;
-                
-        return false;
-    }
-    
-    // Regresa al hermano del vertice. Ya se debe saber si existe padre.
-    private VerticeRojinegro getHermano(ArbolBinario<T>.Vertice v) {
-        if (esHijoIzquierdo(v) )
-            return verticeRojinegro(v.padre.derecho);
-        else 
-            return verticeRojinegro(v.padre.izquierdo);
-    }
-    
-    // Regresa true en caso de que los hijos sean negros, false de lo contrario.
-    private boolean sonHijosNegros(ArbolBinario<T>.Vertice v) {
-        if (getColor(v.izquierdo) == Color.NEGRO && getColor(v.derecho) == Color.NEGRO )
-            return true;
-        else 
-            return false;
-    }
-    
-    // Regresa true en caso de que el vertice tenga minimo un hijo, false en otro caso.
-    private boolean tieneHijos(ArbolBinario<T>.Vertice v) {
-        return v.izquierdo != null || v.derecho != null;
-    }
-    
-    // Crea un nuevo vertice con su elemento igual a null y color rojo.
-    // Actualiza ultimoAgregado para poder eliminarlo sin buscar en todo el arbol.
-    private VerticeRojinegro fantasma() {
-        VerticeRojinegro v = new VerticeRojinegro(null);
-        v.color = Color.NEGRO;
-        ultimoAgregado = v;
-        return v;
-    }
-    
-    // Caza fantasmas que destruyen al maldito.
-    private void ghostBusters(ArbolBinario<T>.Vertice fantasma) {
-        if (fantasma.padre == null)
-            raiz = null;
-        else 
-            fantasma.padre.izquierdo = null;
-            fantasma.padre = null;
-    }
+    ///////////////////////////////////////////////////////////////////////////////
+    // DEBO COMPRENDER MEJOR ESTE BLOQUE.
+    ///////////////////////////////////////////////////////////////////////////////
     
     /**
      * Lanza la excepción {@link UnsupportedOperationException}: los árboles Rojinegro

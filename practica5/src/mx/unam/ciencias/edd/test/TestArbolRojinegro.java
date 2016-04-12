@@ -297,6 +297,7 @@ public class TestArbolRojinegro {
     private void testEliminaDeterministico() {
         for (int i = 0; i < 15; i++)
             arbol.agrega(i);
+            
         pruebaEstructura(new int[] { 3, 1, 7, 0, 2, 5, 9, 4, 6, 8, 11, 10, 13, 12, 14 },
                          "Fallo al inicializar árbol.");
         arbol.elimina(8);

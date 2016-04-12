@@ -251,6 +251,10 @@ public class ArbolBinarioOrdenado<T extends Comparable<T>>
     @Override public Iterator<T> iterator() {
         return new Iterador();
     }
+    
+    ///////////////////////////////////////////////////////////////////////////////
+    // DEBO COMPRENDER MEJOR ESTE BLOQUE.
+    ///////////////////////////////////////////////////////////////////////////////
 
     /**
      * Gira el árbol a la derecha sobre el vértice recibido. Si el vértice no
@@ -258,7 +262,6 @@ public class ArbolBinarioOrdenado<T extends Comparable<T>>
      * @param vertice el vértice sobre el que vamos a girar.
      */
     public void giraDerecha(VerticeArbolBinario<T> vertice) {
-        // Agradecimisnetos a ANgel, Eder y Adri.
         if (vertice == null || !vertice.hayIzquierdo()) {
             return;
         }
@@ -288,7 +291,6 @@ public class ArbolBinarioOrdenado<T extends Comparable<T>>
      * @param vertice el vértice sobre el que vamos a girar.
      */
     public void giraIzquierda(VerticeArbolBinario<T> vertice) {
-        // Agradecimisnetos a ANgel, Eder y Adri.
         if (vertice == null || !vertice.hayDerecho()) {
             return;
         }
@@ -311,6 +313,10 @@ public class ArbolBinarioOrdenado<T extends Comparable<T>>
         v.padre = vd;
         vd.izquierdo = v;
     }
+    
+    ///////////////////////////////////////////////////////////////////////////////
+    // DEBO COMPRENDER MEJOR ESTE BLOQUE.
+    ///////////////////////////////////////////////////////////////////////////////
 
     // Nos dice si es hijo izquierdo. Usar hayPadre() antes de usar
     // este metodo.
