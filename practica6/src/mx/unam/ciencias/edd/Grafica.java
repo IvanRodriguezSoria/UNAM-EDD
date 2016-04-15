@@ -23,13 +23,13 @@ public class Grafica<T> implements Coleccion<T> {
         /* Nos dice si hay un siguiente elemento. */
         @Override public boolean hasNext() {
             // Aquí va su código.
-            return false;
+			return false;
         }
 
         /* Regresa el siguiente elemento. */
         @Override public T next() {
             // Aquí va su código.
-            return null;
+			return null;
         }
 
         /* No lo implementamos: siempre lanza una excepción. */
@@ -137,6 +137,9 @@ public class Grafica<T> implements Coleccion<T> {
      *         igual a b.
      */
     public void conecta(T a, T b) {
+		
+		// Obtengo los vertices que contienen a los elementos a y b.
+		// El metodo vertice() ya avienta una excepcion NoSuchElementException de ser necesaria.
         Vertice va = (Vertice) this.vertice(a);
         Vertice vb = (Vertice) this.vertice(b);
         
@@ -148,6 +151,8 @@ public class Grafica<T> implements Coleccion<T> {
             throw new IllegalArgumentException();
         }
             
+		// Agrego los vertices va y vb a la lista vecinos de los dos vertices.
+		// De esta manera se hace la coneccion entre los vertices.
         va.vecinos.agregaFinal(vb);
         vb.vecinos.agregaFinal(va);
         
@@ -163,6 +168,9 @@ public class Grafica<T> implements Coleccion<T> {
      * @throws IllegalArgumentException si a o b no están conectados.
      */
     public void desconecta(T a, T b) {
+		
+		// Obtengo los vertices que contienen a los elementos a y b.
+		// El metodo vertice() ya avienta una excepcion NoSuchElementException de ser necesaria.
         Vertice va = (Vertice) this.vertice(a);
         Vertice vb = (Vertice) this.vertice(b);
         
@@ -174,6 +182,8 @@ public class Grafica<T> implements Coleccion<T> {
             throw new IllegalArgumentException();
         }
             
+		// Elimino los vertices va y vb de la lista vecinos de cada vertice.
+		// De esta manera elimino la coneccion.
         va.vecinos.elimina(vb);
         vb.vecinos.elimina(va);
         
@@ -203,8 +213,14 @@ public class Grafica<T> implements Coleccion<T> {
      *         gráfica.
      */
     @Override public void elimina(T elemento) {
+		
+		// Obtengo el vertice que contiene al elemento.
+		// El metodo vertice() ya avienta una excepcion NoSuchElementException de ser necesaria.
         Vertice v = (Vertice) this.vertice(elemento);
         vertices.elimina(v);
+		
+		// Elimino la conexion del vertice eliminado con cada uno de los vertices
+		// eliimnando el vertice eliminado de la lista vecinos en cada uno de los vertices.
         for (Vertice vertice : vertices) {
             if (vertice.vecinos.contiene(v) ) {
                 vertice.vecinos.elimina(v);
@@ -250,7 +266,9 @@ public class Grafica<T> implements Coleccion<T> {
      * @param accion la acción a realizar.
      */
     public void paraCadaVertice(AccionVerticeGrafica<T> accion) {
-        // Aquí va su código.
+		for (Vertice v : vertices) {
+			accion.actua(v);
+		}
     }
 
     /**
@@ -264,7 +282,34 @@ public class Grafica<T> implements Coleccion<T> {
      * @throws NoSuchElementException si el elemento no está en la gráfica.
      */
     public void bfs(T elemento, AccionVerticeGrafica<T> accion) {
-        // Aquí va su código. 
+		
+		// Obtengo al vertice que contiene al elemento.
+		// El metodo vertice() ya avienta una excepcion NoSuchElementException de ser necesaria.
+		Vertice v1 = (Vertice) this.vertice(elemento);
+		Vertice aux = null;
+		Cola<Vertice> cola = new Cola<>();
+		
+		// Marco el vertice con el que iniciare cambiando su color.
+		v1.setColor(Color.ROJO);
+		cola.mete(v1);
+		while (!cola.esVacia() ) {
+			aux = cola.saca();
+			accion.actua(aux);
+			
+			// Si el vertice esta marcado no lo meteremos a la cola, de otra forma lo meteremos 
+			// y cambiaremos su color para no volverlo a meter.
+			for (Vertice v2 : aux.vecinos) {
+				if (v2.getColor() != Color.ROJO) {
+					v2.setColor(Color.ROJO);
+					cola.mete(v2);
+				}
+			}
+		}
+		
+		// Cambio el color de todos los vertices a NINGUNO (Los desmarco).
+		for (Vertice v3 : vertices) {
+			v3.setColor(Color.NINGUNO);
+		}
     }
 
     /**
@@ -278,7 +323,34 @@ public class Grafica<T> implements Coleccion<T> {
      * @throws NoSuchElementException si el elemento no está en la gráfica.
      */
     public void dfs(T elemento, AccionVerticeGrafica<T> accion) {
-        // Aquí va su código.
+		
+		// Obtengo al vertice que contiene al elemento.
+		// El metodo vertice() ya avienta una excepcion NoSuchElementException de ser necesaria.
+		Vertice v1 = (Vertice) this.vertice(elemento);
+		Vertice aux = null;
+		Pila<Vertice> pila = new Pila<>();
+		
+		// Marco el vertice con el que iniciare cambiando su color.
+		v1.setColor(Color.ROJO);
+		pila.mete(v1);
+		while (!pila.esVacia() ) {
+			aux = pila.saca();
+			accion.actua(aux);
+			
+			// Si el vertice esta marcado no lo meteremos a la cola, de otra forma lo meteremos 
+			// y cambiaremos su color para no volverlo a meter.
+			for (Vertice v2 : aux.vecinos) {
+				if (v2.getColor() != Color.ROJO) {
+					v2.setColor(Color.ROJO);
+					pila.mete(v2);
+				}
+			}
+		}
+		
+		// Cambio el color de todos los vertices a NINGUNO (Los desmarco).
+		for (Vertice v3 : vertices) {
+			v3.setColor(Color.NINGUNO);
+		}
     }
 
     /**
