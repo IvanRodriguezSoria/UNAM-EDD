@@ -17,19 +17,20 @@ public class Grafica<T> implements Coleccion<T> {
 
         /* Construye un nuevo iterador, auxiliándose de la lista de vértices. */
         public Iterador() {
-            // Aquí va su código.
+            // En tu iterador debes mandar a llamar el iterador de tu lista de vertices
+            iterador = vertices.iterator();
         }
 
         /* Nos dice si hay un siguiente elemento. */
         @Override public boolean hasNext() {
-            // Aquí va su código.
-			return false;
+            // Es trivial
+            return iterador.hasNext();
         }
 
         /* Regresa el siguiente elemento. */
         @Override public T next() {
-            // Aquí va su código.
-			return null;
+            // Trivial
+            return iterador.next().getElemento();
         }
 
         /* No lo implementamos: siempre lanza una excepción. */
@@ -306,10 +307,8 @@ public class Grafica<T> implements Coleccion<T> {
 			}
 		}
 		
-		// Cambio el color de todos los vertices a NINGUNO (Los desmarco).
-		for (Vertice v3 : vertices) {
-			v3.setColor(Color.NINGUNO);
-		}
+		//recuerda usa "lambdas"
+		paraCadaVertice(vertice -> vertice.setColor(Color.NINGUNO));
     }
 
     /**
@@ -350,7 +349,7 @@ public class Grafica<T> implements Coleccion<T> {
 		// Cambio el color de todos los vertices a NINGUNO (Los desmarco).
 		for (Vertice v3 : vertices) {
 			v3.setColor(Color.NINGUNO);
-		}
+		}//No me gusta que uses llaves en if, for, while cuando es una linea >:C
     }
 
     /**
