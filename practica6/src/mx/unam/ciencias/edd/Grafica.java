@@ -75,8 +75,7 @@ public class Grafica<T> implements Coleccion<T> {
 
         /* Regresa un iterador para los vecinos. */
         @Override public Iterable<? extends VerticeGrafica<T>> vecinos() {
-            // Aquí va su código.
-            return null;
+            return vecinos;
         }
     }
 
