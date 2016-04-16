@@ -1,4 +1,4 @@
-# UNAM-EstructurasDatos
+# UNAM-EDD
 
 Autor: Ivan Rodriguez Soria
 
