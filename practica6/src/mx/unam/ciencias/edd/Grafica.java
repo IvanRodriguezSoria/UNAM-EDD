@@ -17,19 +17,17 @@ public class Grafica<T> implements Coleccion<T> {
 
         /* Construye un nuevo iterador, auxiliándose de la lista de vértices. */
         public Iterador() {
-            // Aquí va su código.
+            iterador = vertices.iterator();
         }
 
         /* Nos dice si hay un siguiente elemento. */
         @Override public boolean hasNext() {
-            // Aquí va su código.
-			return false;
+			return iterador.hasNext();
         }
 
         /* Regresa el siguiente elemento. */
         @Override public T next() {
-            // Aquí va su código.
-			return null;
+			return iterador.next().getElemento();
         }
 
         /* No lo implementamos: siempre lanza una excepción. */
@@ -307,9 +305,7 @@ public class Grafica<T> implements Coleccion<T> {
 		}
 		
 		// Cambio el color de todos los vertices a NINGUNO (Los desmarco).
-		for (Vertice v3 : vertices) {
-			v3.setColor(Color.NINGUNO);
-		}
+		this.paraCadaVertice(v3 -> v3.setColor(Color.NINGUNO) );
     }
 
     /**
@@ -348,9 +344,7 @@ public class Grafica<T> implements Coleccion<T> {
 		}
 		
 		// Cambio el color de todos los vertices a NINGUNO (Los desmarco).
-		for (Vertice v3 : vertices) {
-			v3.setColor(Color.NINGUNO);
-		}
+		this.paraCadaVertice(v3 -> v3.setColor(Color.NINGUNO) );
     }
 
     /**
