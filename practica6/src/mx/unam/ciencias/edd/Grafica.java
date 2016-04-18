@@ -280,29 +280,10 @@ public class Grafica<T> implements Coleccion<T> {
      */
     public void bfs(T elemento, AccionVerticeGrafica<T> accion) {
 		
-		// Obtengo al vertice que contiene al elemento.
-		// El metodo vertice() ya avienta una excepcion NoSuchElementException de ser necesaria.
-		Vertice v1 = (Vertice) this.vertice(elemento);
-		Vertice aux = null;
+        // Creo una cola y llamo al metodo recorrido que recorre la grafica usando la cola.
 		Cola<Vertice> cola = new Cola<>();
-		
-		// Marco el vertice con el que iniciare cambiando su color.
-		v1.setColor(Color.ROJO);
-		cola.mete(v1);
-		while (!cola.esVacia() ) {
-			aux = cola.saca();
-			accion.actua(aux);
-			
-			// Si el vertice esta marcado no lo meteremos a la cola, de otra forma lo meteremos 
-			// y cambiaremos su color para no volverlo a meter.
-			for (Vertice v2 : aux.vecinos) {
-				if (v2.getColor() != Color.ROJO) {
-					v2.setColor(Color.ROJO);
-					cola.mete(v2);
-				}
-			}
-		}
-		
+        recorrido(elemento, accion, cola);
+        
 		// Cambio el color de todos los vertices a NINGUNO (Los desmarco).
 		this.paraCadaVertice(v3 -> v3.setColor(Color.NINGUNO) );
     }
@@ -319,17 +300,30 @@ public class Grafica<T> implements Coleccion<T> {
      */
     public void dfs(T elemento, AccionVerticeGrafica<T> accion) {
 		
-		// Obtengo al vertice que contiene al elemento.
-		// El metodo vertice() ya avienta una excepcion NoSuchElementException de ser necesaria.
-		Vertice v1 = (Vertice) this.vertice(elemento);
-		Vertice aux = null;
-		Pila<Vertice> pila = new Pila<>();
+		// Creo una pila y llamo al metodo recorrido que recorre la grafica usando la pila.
+		Cola<Vertice> cola = new Cola<>();
+        recorrido(elemento, accion, cola);
 		
-		// Marco el vertice con el que iniciare cambiando su color.
+		// Cambio el color de todos los vertices a NINGUNO (Los desmarco).
+		this.paraCadaVertice(v3 -> v3.setColor(Color.NINGUNO) );
+    }
+    
+    // Metodo auxiliar que recorre la grafica usando una estrcutura de datos cola o pila.
+    // Recibe el elemento del vertice con que iniciaremos el recorrido, la accion que se 
+    // realizara en cada uno de los vertice y la estructura de la que nos ayudaremos para 
+    // recorrer la grafica.
+    private void recorrido(T elemento, AccionVerticeGrafica<T> accion, MeteSaca<Vertice> edd) {
+		
+        // Obtengo al vertice que contiene al elemento.
+		// El metodo vertice() ya avienta una excepcion NoSuchElementException de ser necesaria.
+        Vertice v1 = (Vertice) this.vertice(elemento);
+        Vertice aux = null;
+        
+        // Marco el vertice con el que iniciare cambiando su color.
 		v1.setColor(Color.ROJO);
-		pila.mete(v1);
-		while (!pila.esVacia() ) {
-			aux = pila.saca();
+		edd.mete(v1);
+		while (!edd.esVacia() ) {
+			aux = edd.saca();
 			accion.actua(aux);
 			
 			// Si el vertice esta marcado no lo meteremos a la cola, de otra forma lo meteremos 
@@ -337,13 +331,10 @@ public class Grafica<T> implements Coleccion<T> {
 			for (Vertice v2 : aux.vecinos) {
 				if (v2.getColor() != Color.ROJO) {
 					v2.setColor(Color.ROJO);
-					pila.mete(v2);
+					edd.mete(v2);
 				}
 			}
 		}
-		
-		// Cambio el color de todos los vertices a NINGUNO (Los desmarco).
-		this.paraCadaVertice(v3 -> v3.setColor(Color.NINGUNO) );
     }
 
     /**
