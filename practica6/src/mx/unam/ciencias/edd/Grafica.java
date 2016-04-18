@@ -301,8 +301,8 @@ public class Grafica<T> implements Coleccion<T> {
     public void dfs(T elemento, AccionVerticeGrafica<T> accion) {
 		
 		// Creo una pila y llamo al metodo recorrido que recorre la grafica usando la pila.
-		Cola<Vertice> cola = new Cola<>();
-        recorrido(elemento, accion, cola);
+		Pila<Vertice> pila = new Pila<>();
+        recorrido(elemento, accion, pila);
 		
 		// Cambio el color de todos los vertices a NINGUNO (Los desmarco).
 		this.paraCadaVertice(v3 -> v3.setColor(Color.NINGUNO) );
