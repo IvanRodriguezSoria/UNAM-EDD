@@ -150,7 +150,6 @@ public class MonticuloMinimo<T extends ComparableIndexable<T>>
      * @return un iterador para iterar el montículo mínimo.
      */
     @Override public Iterator<T> iterator() {
-        // Aquí va su código.
-        return null;
+        return new Iterador();
     }
 }
