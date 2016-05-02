@@ -53,7 +53,7 @@ public class MonticuloMinimo<T extends ComparableIndexable<T>>
      * #MonticuloMinimo(Lista)}, pero se ofrece este constructor por completez.
      */
     public MonticuloMinimo() {
-        // Aquí va su código.
+		this.siguiente = 0; // TODO.
     }
 
     /**
@@ -65,7 +65,10 @@ public class MonticuloMinimo<T extends ComparableIndexable<T>>
      *              montículo.
      */
     public MonticuloMinimo(Lista<T> lista) {
-        // Aquí va su código.
+        this.creaArregloGenerico(lista.getElementos() );
+		for (T e : lista)
+			this.agrega(e);
+		// TODO.
     }
 
     /**
@@ -73,7 +76,7 @@ public class MonticuloMinimo<T extends ComparableIndexable<T>>
      * @param elemento el elemento a agregar en el montículo.
      */
     @Override public void agrega(T elemento) {
-        // Aquí va su código.
+        // TODO.
     }
 
     /**
@@ -101,8 +104,11 @@ public class MonticuloMinimo<T extends ComparableIndexable<T>>
      *         <code>false</code> en otro caso.
      */
     @Override public boolean contiene(T elemento) {
-        // Aquí va su código.
-        return false;
+        for (T e : arbol)
+			if (e.equals(elemento) )
+				return true;
+		
+		return false;
     }
 
     /**
@@ -111,8 +117,7 @@ public class MonticuloMinimo<T extends ComparableIndexable<T>>
      *         <tt>false</tt> en otro caso.
      */
     @Override public boolean esVacio() {
-        // Aquí va su código.
-        return false;
+        return this.arbol == null || this.arbol[0] == null;
     }
 
    /**
@@ -128,8 +133,8 @@ public class MonticuloMinimo<T extends ComparableIndexable<T>>
      * @return el número de elementos en el montículo mínimo.
      */
     @Override public int getElementos() {
-        // Aquí va su código.
-        return 0;
+        return siguiente - 1;
+		// TODO.
     }
 
     /**
