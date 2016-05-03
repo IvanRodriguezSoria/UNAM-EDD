@@ -25,10 +25,9 @@ public class MonticuloMinimo<T extends ComparableIndexable<T>>
 
         /* Regresa el siguiente elemento. */
         @Override public T next() {
-			if (!hasNext() )
-				throw new NoSuchElementException();
-            
-			return arbol[indice++];
+            if (!hasNext() )
+                throw new NoSuchElementException();
+            return arbol[indice++];
         }
 
         /* No lo implementamos: siempre lanza una excepción. */
