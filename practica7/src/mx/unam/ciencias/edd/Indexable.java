@@ -20,7 +20,7 @@ public class Indexable<T> implements ComparableIndexable<Indexable<T>> {
     public Indexable(T elemento, double valor) {
         this.elemento = elemento;
         this.valor = valor;
-		indice = -1;
+        indice = -1;
     }
 
     /**
@@ -44,7 +44,7 @@ public class Indexable<T> implements ComparableIndexable<Indexable<T>> {
         else if (valor > indexable.valor)
             return 1;
         else
-			return 0;
+            return 0;
     }
 
     /**
