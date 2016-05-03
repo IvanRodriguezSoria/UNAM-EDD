@@ -116,9 +116,8 @@ public class Grafica<T> implements Coleccion<T> {
      *         la gráfica.
      */
     @Override public void agrega(T elemento) {
-        if (this.contiene(elemento) ) {
+        if (this.contiene(elemento) )
             throw new IllegalArgumentException();
-        }
             
         Vertice v = new Vertice(elemento);
         vertices.agregaFinal(v);
@@ -140,13 +139,11 @@ public class Grafica<T> implements Coleccion<T> {
         Vertice va = (Vertice) this.vertice(a);
         Vertice vb = (Vertice) this.vertice(b);
         
-        if (va == vb) {
+        if (va == vb)
             throw new IllegalArgumentException();
-        }
             
-        if (va.vecinos.contiene(vb) ) {
+        if (va.vecinos.contiene(vb) )
             throw new IllegalArgumentException();
-        }
             
         // Agrego los vertices va y vb a la lista vecinos de los dos vertices.
         // De esta manera se hace la coneccion entre los vertices.
@@ -171,13 +168,11 @@ public class Grafica<T> implements Coleccion<T> {
         Vertice va = (Vertice) this.vertice(a);
         Vertice vb = (Vertice) this.vertice(b);
         
-        if (va == vb) {
+        if (va == vb)
             throw new IllegalArgumentException();
-        }
             
-        if (!va.vecinos.contiene(vb) ) {
+        if (!va.vecinos.contiene(vb) )
             throw new IllegalArgumentException();
-        }
             
         // Elimino los vertices va y vb de la lista vecinos de cada vertice.
         // De esta manera elimino la coneccion.
@@ -193,11 +188,9 @@ public class Grafica<T> implements Coleccion<T> {
      *         <tt>false</tt> en otro caso.
      */
     @Override public boolean contiene(T elemento) {
-        for (Vertice v : vertices) {
-            if (v.elemento.equals(elemento) ) {
+        for (Vertice v : vertices)
+            if (v.elemento.equals(elemento) )
                 return true;
-            }
-        }
                 
         return false;
     }
@@ -218,12 +211,11 @@ public class Grafica<T> implements Coleccion<T> {
         		
         // Elimino la conexion del vertice eliminado con cada uno de los vertices
         // eliimnando el vertice eliminado de la lista vecinos en cada uno de los vertices.
-        for (Vertice vertice : vertices) {
+        for (Vertice vertice : vertices)
             if (vertice.vecinos.contiene(v) ) {
                 vertice.vecinos.elimina(v);
                 --aristas;
             }
-        }
     }
 
     /**
@@ -325,12 +317,11 @@ public class Grafica<T> implements Coleccion<T> {
             
             // Si el vertice esta marcado no lo meteremos a la cola, de otra forma lo meteremos 
             // y cambiaremos su color para no volverlo a meter.
-            for (Vertice v2 : aux.vecinos) {
+            for (Vertice v2 : aux.vecinos)
                 if (v2.getColor() != Color.ROJO) {
                     v2.setColor(Color.ROJO);
                     edd.mete(v2);
                 }
-            }
         }
     }
 
