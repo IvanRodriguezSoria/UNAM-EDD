@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<project name="practica7" default="practica7.jar" basedir="." >
+<project name="practica7" default="proyecto2.jar" basedir="." >
 
   <property name="build.dir" value="build" />
   <property name="src.dir"   value="src" />
   <property name="lib.dir"   value="lib" />
   <property name="doc.dir"   value="doc" />
 
-  <target name="practica7.jar" depends="compile.practica7">
-    <jar jarfile="practica7.jar">
+  <target name="proyecto2.jar" depends="compile.proyecto2">
+    <jar jarfile="proyecto2.jar">
       <zipfileset dir="${build.dir}" prefix="" />
       <manifest>
-        <attribute name="Main-Class" value="mx.unam.ciencias.edd.Practica7"/>
+        <attribute name="Main-Class" value="mx.unam.ciencias.edd.proyecto2.Proyecto2"/>
       </manifest>
     </jar>
   </target>
 
-  <target name="compile.practica7">
+  <target name="compile.proyecto2">
     <mkdir dir="${build.dir}"/>
     <javac srcdir="${src.dir}"
            destdir="${build.dir}"
@@ -33,7 +33,7 @@
     </javac>
   </target>
 
-  <target name="doc" depends="practica7.jar">
+  <target name="doc" depends="proyecto2.jar">
     <mkdir dir="${doc.dir}"/>
     <javadoc packagenames="mx.unam.ciencias.edd.*"
              sourcepath="src"
@@ -54,12 +54,12 @@
   </target>
 
   <target name="clean">
-    <delete file="practica7.jar"/>
+    <delete file="proyecto2.jar"/>
     <delete dir="${build.dir}"/>
     <delete dir="${doc.dir}"/>
   </target>
 
-  <target name="test" depends="practica7.jar">
+  <target name="test" depends="proyecto2.jar">
     <junit printsummary="yes" haltonfailure="no">
       <formatter type="plain" usefile="false" />
       <classpath>
