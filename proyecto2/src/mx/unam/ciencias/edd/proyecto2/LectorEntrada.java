@@ -7,7 +7,7 @@ import java.io.IOException;
 
 // Clase LectorEntrada para leer archivos o texto de la entrada estandard y
 // guardar las lineas de texto leidas en una lista. Esto permite trabajar con
-// el texto posteriormente.
+// el texto posteriormente. 
 public class LectorEntrada {
     
     private String linea;

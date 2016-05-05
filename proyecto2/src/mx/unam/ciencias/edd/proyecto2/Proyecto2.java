@@ -19,6 +19,6 @@ public class Proyecto2 {
         in.leerEntrada();
         
         for (String s : in.getLista() )
-            System.out.println(s);
+            System.out.println(s); 
     }
 }
