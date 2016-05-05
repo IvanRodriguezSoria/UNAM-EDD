@@ -9,16 +9,16 @@ public class Proyecto2 {
 
     public static void main(String[] args) throws IOException {
         
-        LectorEntrada inputReader;
+        LectorEntrada in;
         
         if (args.length > 0)
-            inputReader = new LectorEntrada(new BufferedReader(new FileReader(args[0]) ) );
+            in = new LectorEntrada(new BufferedReader(new FileReader(args[0]) ) );
         else
-            inputReader = new LectorEntrada(new BufferedReader(new InputStreamReader(System.in) ) );
+            in = new LectorEntrada(new BufferedReader(new InputStreamReader(System.in) ) );
             
-        inputReader.agregaLinea();
+        in.leerEntrada();
         
-        for (String s : inputReader.lista)
+        for (String s : in.getLista() )
             System.out.println(s);
     }
 }
