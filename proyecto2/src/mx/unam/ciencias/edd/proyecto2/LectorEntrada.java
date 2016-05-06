@@ -12,19 +12,19 @@ public class LectorEntrada {
     
     private String linea;
     private BufferedReader in;
-    private Lista<String> lista;
+    private Lista<String> datos;
     
     public LectorEntrada(BufferedReader in) {
         this.in = in;
-        lista = new Lista<String>();
+        datos = new Lista<String>();
     }
     
     public void leerEntrada() throws IOException {
         while ((linea = in.readLine() ) != null && linea.length() != 0)
-            lista.agrega(linea);
+            datos.agrega(linea);
     }
     
-    public Lista<String> getLista() {
-        return lista;
+    public Lista<String> getDatos() {
+        return datos;
     }
 }

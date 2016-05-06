@@ -1,5 +1,6 @@
 package mx.unam.ciencias.edd.proyecto2;
 
+import mx.unam.ciencias.edd.Lista;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.InputStreamReader;
@@ -10,6 +11,8 @@ public class Proyecto2 {
     public static void main(String[] args) throws IOException {
         
         LectorEntrada in;
+        Lista<String> datos;
+        LectorEstructura inEDD = new LectorEstructura();
         
         if (args.length > 0)
             in = new LectorEntrada(new BufferedReader(new FileReader(args[0]) ) );
@@ -17,8 +20,7 @@ public class Proyecto2 {
             in = new LectorEntrada(new BufferedReader(new InputStreamReader(System.in) ) );
             
         in.leerEntrada();
-        
-        for (String s : in.getLista() )
-            System.out.println(s); 
+        datos = in.getDatos();
+        inEDD.getSVG(datos); // TODO. Enviar a archivo SVG.
     }
 }
