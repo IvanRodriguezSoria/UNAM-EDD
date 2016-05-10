@@ -563,7 +563,6 @@ public class Grafica<T> implements Coleccion<T> {
      *         la gráfica.
      */
     public Lista<VerticeGrafica<T>> dijkstra(T origen, T destino) {
-        // Aquí va su código.
         Lista<VerticeGrafica<T>> lista = new Lista<>();
         Vertice v1 = verticeAux(origen);
         v1.distancia = 0;
