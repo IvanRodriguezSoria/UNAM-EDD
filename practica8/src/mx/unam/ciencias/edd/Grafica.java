@@ -507,11 +507,48 @@ public class Grafica<T> implements Coleccion<T> {
      *         la gráfica.
      */
     public Lista<VerticeGrafica<T>> trayectoriaMinima(T origen, T destino) {
-        // Aquí va su código.
         Lista<VerticeGrafica<T>> lista = new Lista<>();
         Vertice v1 = verticeAux(origen);
+        v1.distancia = 0;
         Vertice v2 = verticeAux(destino);
-        return lista;
+        
+        calculaDistancia(v1);
+        
+        return getListaTrayectoria(v2, lista).reversa();
+    }
+    
+    // Calcula la distancia desde el origen a todos los vertices.
+    // Recive el vertice origen desde donde se calculara la distancia.
+    private void calculaDistancia(Vertice origen) {
+        for (Vecino v : origen.vecinos)
+            if (v.vecino.distancia > origen.distancia + 1 || v.vecino.distancia == -1) {
+                v.vecino.distancia = origen.distancia + 1;
+                calculaDistancia(v.vecino);
+            }
+    }
+    
+    // Regresa una lista que contiene el camino mas corto desde un vertice destino hasta
+    // un vertice origen (Osea empieza del final).
+    // Recive el vertice destino y la lista que se regresara con la trayectoria.
+    private Lista<VerticeGrafica<T>> getListaTrayectoria(Vertice destino, Lista<VerticeGrafica<T>> lista) {
+        lista.agregaFinal(destino);
+        
+        // Si la distancia del vertice con el que entramos a la recursion es 0 significa que llegamos
+        // al origen y acabamos. Si es -1 significa que no hay camino desde el origen al destino y terminamos.
+        // Cambiamos la distancia de todos los vertices a -1 y regresamos la lista. 
+        if (destino.distancia == -1 || destino.distancia == 0) {
+            for (Vertice v : vertices)
+                v.distancia = -1;
+            return lista;
+        }
+        
+        // Buscamos el vertice con la distancia mas pequeña de entre los vecinos y entramos a la recursion.
+        Vertice aux = destino;
+        for (Vecino v : destino.vecinos)
+            if (v.vecino.distancia < aux.distancia)
+                aux = v.vecino;
+        
+        return getListaTrayectoria(aux, lista);
     }
 
     /**
