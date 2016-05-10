@@ -362,7 +362,6 @@ public class Grafica<T> implements Coleccion<T> {
      * @throws NoSuchElementException si a o b no son elementos de la gráfica.
      */
     public double getPeso(T a, T b) {
-        // Aquí va su código.
         // El metodo verticeAux() ya avienta NoSuchElementException en caso de ser necesario.
         Vertice v1 = verticeAux(a);
         Vertice v2 = verticeAux(b);
@@ -373,7 +372,7 @@ public class Grafica<T> implements Coleccion<T> {
         if (v3 == null || v4 == null)
             return -1;
             
-        return 0;
+        return v4.peso;
     }
 
     /**
@@ -531,6 +530,7 @@ public class Grafica<T> implements Coleccion<T> {
     // un vertice origen (Osea empieza del final).
     // Recive el vertice destino y la lista que se regresara con la trayectoria.
     private Lista<VerticeGrafica<T>> getListaTrayectoria(Vertice destino, Lista<VerticeGrafica<T>> lista) {
+        
         lista.agregaFinal(destino);
         
         // Si la distancia del vertice con el que entramos a la recursion es 0 significa que llegamos
@@ -564,6 +564,43 @@ public class Grafica<T> implements Coleccion<T> {
      */
     public Lista<VerticeGrafica<T>> dijkstra(T origen, T destino) {
         // Aquí va su código.
-        return null;
+        Lista<VerticeGrafica<T>> lista = new Lista<>();
+        Vertice v1 = verticeAux(origen);
+        v1.distancia = 0;
+        Vertice v2 = verticeAux(destino);
+        
+        calculaTrayectoriaPesoMinimo(v1);
+        
+        return getListaDijkstra(v2, lista).reversa();
+    }
+    
+    private void calculaTrayectoriaPesoMinimo(Vertice origen) {
+        for (Vecino v : origen.vecinos)
+            if (origen.distancia + v.peso < v.vecino.distancia || v.vecino.distancia == -1) {
+                v.vecino.distancia = origen.distancia + v.peso;
+                calculaTrayectoriaPesoMinimo(v.vecino);
+            }
+    }
+    
+    private Lista<VerticeGrafica<T>> getListaDijkstra(Vertice destino, Lista<VerticeGrafica<T>> lista) {
+        
+        lista.agregaFinal(destino);
+        
+        // Si la distancia del vertice con el que entramos a la recursion es 0 significa que llegamos
+        // al origen y acabamos. Si es -1 significa que no hay camino desde el origen al destino y terminamos.
+        // Cambiamos la distancia de todos los vertices a -1 y regresamos la lista. 
+        if (destino.distancia == -1 || destino.distancia == 0) {
+            for (Vertice v : vertices)
+                v.distancia = -1;
+            return lista;
+        }
+        
+        // Buscamos el vertice con la distancia mas pequeña de entre los vecinos y entramos a la recursion.
+        Vertice aux = destino;
+        for (Vecino v : destino.vecinos)
+            if (aux.distancia - v.peso == v.vecino.distancia)
+                aux = v.vecino;
+        
+        return getListaTrayectoria(aux, lista);
     }
 }
