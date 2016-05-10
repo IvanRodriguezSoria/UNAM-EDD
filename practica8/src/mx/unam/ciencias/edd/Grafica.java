@@ -101,7 +101,7 @@ public class Grafica<T> implements Coleccion<T> {
             color = Color.NINGUNO;
             vecinos = new Lista<Vecino>();
             distancia = -1;
-            // TODO.
+            indice = 0; // TODO. No se realmente cual es el indice inicial.
         }
 
         /* Regresa el elemento del vértice. */
@@ -273,7 +273,7 @@ public class Grafica<T> implements Coleccion<T> {
         if (!vertices.contiene(va) || !vertices.contiene(vb) )
             throw new NoSuchElementException();
             
-        // Busco al si estan conectados o no.
+        // Busco si estan conectados o no.
         Vecino vaVecino = vecino(va, vb);
         Vecino vbVecino = vecino(vb, va);
         
@@ -326,9 +326,10 @@ public class Grafica<T> implements Coleccion<T> {
     // Metodo auxiliar para eliminar todas las conexiones.
     private void destruyeConexiones(Vertice v) {
         for (Vertice v1 : vertices) {
-            for (Vecino v2 : v.vecinos)
+            for (Vecino v2 : v1.vecinos)
                 if (v.getElemento().equals(v2.getElemento() ) ) {
-                    v.vecinos.elimina(v2);
+                    v1.vecinos.elimina(v2);
+                    --aristas;
                 }
         }
     }
@@ -362,6 +363,16 @@ public class Grafica<T> implements Coleccion<T> {
      */
     public double getPeso(T a, T b) {
         // Aquí va su código.
+        // El metodo verticeAux() ya avienta NoSuchElementException en caso de ser necesario.
+        Vertice v1 = verticeAux(a);
+        Vertice v2 = verticeAux(b);
+        
+        Vecino v3 = vecino(v1, v2);
+        Vecino v4 = vecino(v2, v1);
+        
+        if (v3 == null || v4 == null)
+            return -1;
+            
         return 0;
     }
 
