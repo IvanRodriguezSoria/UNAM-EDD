@@ -16,7 +16,6 @@ public class LectorEstructura {
     
     // Transforma la estructura recibida a SVG.
     public String toSVG(Estructura estructura, String elementos) {
-        System.out.println(elementos);
         switch(estructura) { // TODO. Regresar SVG.
             case ARBOL_AVL:
                 return "AVL";

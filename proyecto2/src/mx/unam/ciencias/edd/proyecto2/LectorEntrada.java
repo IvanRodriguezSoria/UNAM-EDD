@@ -19,11 +19,13 @@ public class LectorEntrada {
         datos = new Lista<String>();
     }
     
+    // Lee cada linea de la entrada y la envia a una lista.
     public void leerEntrada() throws IOException {
         while ((linea = in.readLine() ) != null && linea.length() != 0)
             datos.agrega(linea);
     }
     
+    // Regresa la lista que contiene el texto ingresado en la entrada estandard.
     public Lista<String> getDatos() {
         return datos;
     }

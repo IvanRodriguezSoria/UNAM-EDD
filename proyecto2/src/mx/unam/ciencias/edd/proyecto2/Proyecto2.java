@@ -14,6 +14,7 @@ public class Proyecto2 {
         Lista<String> datos;
         LectorEstructura inEDD = new LectorEstructura();
         
+        // Checo si la entrada es un archivo o texto ingresado en el teclado.
         if (args.length > 0)
             in = new LectorEntrada(new BufferedReader(new FileReader(args[0]) ) );
         else
@@ -21,6 +22,6 @@ public class Proyecto2 {
             
         in.leerEntrada();
         datos = in.getDatos();
-        inEDD.getSVG(datos); // TODO. Enviar a archivo SVG.
+        System.out.println(inEDD.getSVG(datos) ); // TODO. Enviar a archivo SVG.
     }
 }
