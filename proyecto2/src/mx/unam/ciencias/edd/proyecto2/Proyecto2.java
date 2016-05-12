@@ -26,7 +26,6 @@ public class Proyecto2 {
             datos = in.getDatos();
             inEDD = new LectorEstructura(datos);
             System.out.println(inEDD.getSVG() ); // TODO. Enviar a archivo SVG.
-            System.out.println(inEDD.listaElementos); // TODO. Quitar esto.
             
         } catch (IOException e) {
             System.out.println("\n************************************************"

@@ -13,7 +13,7 @@ public class LectorEstructura {
     private String relaciones;
     private Estructura estructura;
     private Lista<String> lista;
-    public Lista<Integer> listaElementos; // TODO quitar public.
+    private Lista<Integer> listaElementos;
     private Lista<Integer> listaRelaciones;
     
     // Constructor que inicializa la lista de elementos, relaciones y obtiene la estructura 
@@ -65,11 +65,7 @@ public class LectorEstructura {
     
     // Regresa el SVG de la estructura deseada.
     public String getSVG() {
-        if (estructura == Estructura.GRAFICA)
-            SVG = toSVG(estructura, listaElementos, listaRelaciones);
-        else 
-            SVG = toSVG(estructura, listaElementos);
-        
+        SVG = toSVG(estructura);
         return SVG;
     }
     
@@ -100,39 +96,48 @@ public class LectorEstructura {
     }
     
     // Transforma la estructura recibida a SVG.
-    public String toSVG(Estructura estructura, Lista<Integer> elementos) {
-        switch(estructura) { // TODO. Regresar SVG.
+    public String toSVG(Estructura estructura) {
+        DibujadorSVG dibujador = new DibujadorSVG();
+        switch(estructura) {
+            
             case ARBOL_AVL:
                 ArbolAVL<Integer> avl = new ArbolAVL<Integer>();
-                return "AVL";
+                return dibujador.dibujarAVL(avl, listaElementos);
+            
             case ARBOL_BINARIO_COMPLETO:
                 ArbolBinarioCompleto<Integer> completo = new ArbolBinarioCompleto<Integer>();
-                return "Completo";
+                return dibujador.dibujarCompleto(completo, listaElementos);
+            
             case ARBOL_BINARIO_ORDENADO:
                 ArbolBinarioOrdenado<Integer> ordenado = new ArbolBinarioOrdenado<Integer>();
-                return "Ordenado";
+                return dibujador.dibujarOrdenado(ordenado, listaElementos);
+            
             case ARBOL_ROJINEGRO:
                 ArbolRojinegro<Integer> rojinegro = new ArbolRojinegro<Integer>();
-                return "Rojinegro";
+                return dibujador.dibujarRojinegro(rojinegro, listaElementos);
+            
             case COLA:
                 Cola<Integer> cola = new Cola<Integer>();
-                return "Cola";
+                return dibujador.dibujarCola(cola, listaElementos);
+            
             case LISTA:
                 Lista<Integer> lista = new Lista<Integer>();
-                return "Lista";
+                return dibujador.dibujarLista(lista, listaElementos);
+            
             case MONTICULO_MINIMO: 
                 // TODO.
-                return "Heap";
+                return dibujador.dibujarMonticulo(listaElementos);
+            
             case PILA: 
                 Pila<Integer> pila = new Pila<Integer>();
-                return "Pila";
+                return dibujador.dibujarPila(pila, listaElementos);
+            
+            case GRAFICA:
+                // TODO.
+                return dibujador.dibujarGrafica(listaElementos, listaRelaciones);
+            
             default:
                 throw new IllegalArgumentException();
         }
-    }
-    
-    // Transforma la estructura recibida a SVG.
-    public String toSVG(Estructura estructura, Lista<Integer> elementos, Lista<Integer> relaciones) {
-        return "Grafica"; // TODO. Regresar SVG.
     }
 }
