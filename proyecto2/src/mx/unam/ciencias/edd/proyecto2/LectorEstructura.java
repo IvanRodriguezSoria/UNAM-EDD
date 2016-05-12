@@ -20,7 +20,7 @@ public class LectorEstructura {
     // que se desea dibujar en SVG.
     public LectorEstructura(Lista<String> lista) {
         if (lista == null)
-            throw new IllegalArgumentException("Lista invalida (null).");
+            throw new IllegalArgumentException();
         
         this.lista = lista;
         Iterator iterador = lista.iterator();
@@ -31,37 +31,57 @@ public class LectorEstructura {
             String primeraLinea = iterador.next().toString();
             estructura = getEstructura(primeraLinea);
             elementos = iterador.next().toString();
-            elementos = elementos.replace(", ", "");
-            elementos = elementos.trim();
-            poblarListaInt(elementos);
-        
+            getNumeros(elementos, listaElementos);
+            
             if (estructura == Estructura.GRAFICA) {
                 relaciones = iterador.next().toString();
-                relaciones = relaciones.replace(", ", "");
-                relaciones = relaciones.replace("; ", "");
-                relaciones = relaciones.trim();
-                poblarListaInt(relaciones);
+                getNumeros(relaciones, listaRelaciones);
             }
             
         } catch (NoSuchElementException e) {
-            System.out.println("\nSe ingreso un formato invalido.\n"
+            System.out.println("\n************************************************"
+                + "\nSe ingreso un formato invalido.\n"
                 + "\tFormato valido:\n"
                 + "\t\t# <NombreDeClase>\n"
                 + "\t\t<Elementos>\n"
                 + "\t\t<Relaciones>\n"
-                + "\n(Ultimo parametro exclusivo de Graficas)\n");
+                + "\n(Ultimo parametro exclusivo de Graficas)\n"
+                + "\n************************************************");
+        } catch (NumberFormatException e) {
+            System.out.println("\n************************************************"
+                + "Se ingreso un elemento invalido, asegurese que ingreso un numero entero."
+                + "\n************************************************");
         } catch (IllegalArgumentException e) {
-            System.out.println("Error(Enumeracion invalida). "
-            + "Contacte al proveedor del sofware.");
+            System.out.println("\n************************************************"
+                + "\nError(Enumeracion invalida o lista null). "
+                + "Contacte al proveedor del sofware."
+                + "\n************************************************");
         }
     }
     
-    // Llena una lista con los enteros en una cadena.
-    // Use un truco visto en StackOverflow para convertir char a int.
-    // http://stackoverflow.com/questions/4968323/java-parse-int-value-from-a-char
-    private void poblarListaInt(String cadena) {
-        for (int i = 0; i < elementos.length(); ++i)
-            listaElementos.agregaFinal(cadena.charAt(i) - '0' );
+    // Obtiene todos los numeros enteros de la cadena y los agrega a una lista.
+    // Parametros: La cadena de donde se obtendran los numeros, la lista a donde se agregaran.
+    private void getNumeros(String cadena, Lista<Integer> lista) {
+        String auxString = "";
+        int auxInt = cadena.length();
+        char auxChar;
+        for (int i = 0; i < auxInt; ++i) {
+            auxChar = cadena.charAt(i);
+            switch (auxChar) {
+                case ',':
+                case ';':
+                    lista.agregaFinal(Integer.parseInt(auxString) );
+                    auxString = "";
+                    break;
+                case ' ':
+                    break;
+                default:
+                    auxString += auxChar;    
+            }
+            
+            if (i == auxInt - 1)
+                lista.agregaFinal(Integer.parseInt(auxString) );
+        }
     }
     
     // Regresa el SVG de la estructura deseada.
