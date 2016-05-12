@@ -27,35 +27,14 @@ public class LectorEstructura {
         listaElementos = new Lista<Integer>();
         listaRelaciones = new Lista<Integer>();
         
-        try {
-            String primeraLinea = iterador.next().toString();
-            estructura = getEstructura(primeraLinea);
-            elementos = iterador.next().toString();
-            getNumeros(elementos, listaElementos);
+        String primeraLinea = iterador.next().toString();
+        estructura = getEstructura(primeraLinea);
+        elementos = iterador.next().toString();
+        getNumeros(elementos, listaElementos);
             
-            if (estructura == Estructura.GRAFICA) {
-                relaciones = iterador.next().toString();
-                getNumeros(relaciones, listaRelaciones);
-            }
-            
-        } catch (NoSuchElementException e) {
-            System.out.println("\n************************************************"
-                + "\nSe ingreso un formato invalido.\n"
-                + "\tFormato valido:\n"
-                + "\t\t# <NombreDeClase>\n"
-                + "\t\t<Elementos>\n"
-                + "\t\t<Relaciones>\n"
-                + "\n(Ultimo parametro exclusivo de Graficas)\n"
-                + "\n************************************************");
-        } catch (NumberFormatException e) {
-            System.out.println("\n************************************************"
-                + "Se ingreso un elemento invalido, asegurese que ingreso un numero entero."
-                + "\n************************************************");
-        } catch (IllegalArgumentException e) {
-            System.out.println("\n************************************************"
-                + "\nError(Enumeracion invalida o lista null). "
-                + "Contacte al proveedor del sofware."
-                + "\n************************************************");
+        if (estructura == Estructura.GRAFICA) {
+            relaciones = iterador.next().toString();
+            getNumeros(relaciones, listaRelaciones);
         }
     }
     
@@ -117,7 +96,7 @@ public class LectorEstructura {
         else if (renglon.equals("# pila") )
             return Estructura.PILA;
         else 
-            throw new NoSuchElementException("Estructura invalida.");
+            throw new NoSuchElementException();
     }
     
     // Transforma la estructura recibida a SVG.
@@ -148,7 +127,7 @@ public class LectorEstructura {
                 Pila<Integer> pila = new Pila<Integer>();
                 return "Pila";
             default:
-                throw new IllegalArgumentException("Enumeracion invalida.");
+                throw new IllegalArgumentException();
         }
     }
     
