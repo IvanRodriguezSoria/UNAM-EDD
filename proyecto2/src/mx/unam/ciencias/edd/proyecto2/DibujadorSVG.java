@@ -9,6 +9,8 @@ public class DibujadorSVG {
     // Constructor por omision.
     public DibujadorSVG() {}
     
+    // Regresa el marco (Contenedor de toda la imagen).
+    // Parametros: ancho, alto y lo que estara en el centro del marco.
     private String dibujarMarco(int ancho, int largo, String relleno) {
         return "<svg width=\"" + ancho + "\" height=\"" + largo + "\"><g>" + relleno + "</g></svg>";
     }
