@@ -28,14 +28,14 @@ public class Proyecto2 {
             System.out.println(inEDD.getSVG() );
             
         } catch (IOException e) {
-            System.out.println("\n************************************************"
+            System.err.println("\n************************************************"
                 + "\n\nError al leer el archivo, verifique que el " 
                 + "\narchivo y su direccion esten bien escritos."
                 + "\n\n\tEjemplo: Downloads/archivo.txt o" 
                 + "\n\ten Windows Downloads\\archivo.txt"
                 + "\n\n************************************************");
         } catch (NoSuchElementException e) {
-            System.out.println("\n************************************************"
+            System.err.println("\n************************************************"
                 + "\n\nSe ingreso un formato invalido."
                 + "\n\tFormato valido:"
                 + "\n\t\t# <NombreDeClase>"
@@ -44,12 +44,12 @@ public class Proyecto2 {
                 + "\n(Ultimo parametro exclusivo de Graficas)"
                 + "\n\n************************************************");
         } catch (NumberFormatException e) {
-            System.out.println("\n************************************************"
+            System.err.println("\n************************************************"
                 + "\n\nSe ingreso un elemento invalido, asegurese " 
                 + "\nque ingreso un numero entero."
                 + "\n\n************************************************");
         } catch (IllegalArgumentException e) {
-            System.out.println("\n************************************************"
+            System.err.println("\n************************************************"
                 + "\n\nError(Enumeracion invalida o lista null). "
                 + "\nContacte al proveedor del sofware."
                 + "\n\n************************************************");
