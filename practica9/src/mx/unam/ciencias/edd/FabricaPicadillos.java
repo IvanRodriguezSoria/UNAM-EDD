@@ -23,9 +23,28 @@ public class FabricaPicadillos {
             return 2;
         };
         
+        // No tengo idea de que hace este metodo. Lo puse tal cual lo dio el profesor.
         Picadillo<String> xorString = (String objeto) -> {
-            // TODO. Arreglo de bytes.
-            return 3;
+            byte[] k = objeto.getBytes();
+            int l = k.length;
+            int r = 0;
+            int i = 0;
+            
+            while (l >= 4) {
+                r ^= (k[i] << 24) | (k[i + 1] << 16) | (k[i + 2] << 8) | k[i + 3];
+                i += 4;
+                l -= 4;
+            }
+            
+            int t = 0;
+            switch (l) {
+                case 3: t |= k[i+2] << 8;
+                case 2: t |= k[i+1] << 16;
+                case 1: t |= k[i]   << 24;
+            }
+            
+            r ^= t;
+            return r;
         };
         
         switch (algoritmo) {
