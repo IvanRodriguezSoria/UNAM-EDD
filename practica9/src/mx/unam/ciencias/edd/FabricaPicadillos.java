@@ -24,7 +24,7 @@ public class FabricaPicadillos {
         };
         
         Picadillo<String> xorString = (String objeto) -> {
-            // TODO.
+            // TODO. Arreglo de bytes.
             return 3;
         };
         
